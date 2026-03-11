@@ -25,6 +25,7 @@ function menuPrincipal() {
   textSize(25);
   text("JOGAR", 640, 330);
   text("INSTRUÇÕES", 640, 450);
+  textAlign(CENTER, CENTER);
 }
 
 function cliqueMenu() {

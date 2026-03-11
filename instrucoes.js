@@ -24,7 +24,6 @@ function instrucoes() {
   textSize(25);
   textAlign(CENTER, CENTER);
   text("VOLTAR", 640, 530);
-  textAlign(CENTER, BASELINE);
 }
 
 function cliqueInstrucoes() {
