@@ -1,14 +1,26 @@
 function menuPrincipal() {
   background(imgFundo);
   
-  fill(255); 
-  textSize(60);
+  // TÍTULO COM CONTORNO
+  fill(255);         
+  stroke(0);         
+  strokeWeight(6);   
+  textSize(60);      
   text("SEGUE O RITMO", 640, 180);
   
+  // CONTORNO A PRETO PARA OS BOTÕES
+  stroke(0);
+  strokeWeight(4);
   fill(220); 
-  rect(540, 300, 200, 60, 10);
-  rect(540, 420, 200, 60, 10); 
   
+  // BOTÕES (largura 300, X 490)
+  rect(490, 300, 300, 60, 10);
+  rect(490, 420, 300, 60, 10); 
+  
+  // DESLIGAR O CONTORNO PARA O TEXTO
+  noStroke(); 
+  
+  // TEXTO DOS BOTÕES
   fill(0);
   textSize(25);
   text("JOGAR", 640, 330);
@@ -16,11 +28,12 @@ function menuPrincipal() {
 }
 
 function cliqueMenu() {
-  if (mouseX > 540 && mouseX < 740) {
+  // A zona de clique mantém-se entre 490 e 790
+  if (mouseX > 490 && mouseX < 790) {
     if (mouseY > 300 && mouseY < 360) {
-      ecra = 1; 
+      ecra = 1; // Vai para Jogo
     } else if (mouseY > 420 && mouseY < 480) {
-      ecra = 2;
+      ecra = 2; // Vai para Instruções
     }
   }
 }

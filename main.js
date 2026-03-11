@@ -1,14 +1,23 @@
 // Variáveis Globais do Jogo
-let ecra = 0; // 0: Menu, 1: Jogo, 2: Instruções, 3: Reiniciar
+let ecra = 0; 
 let imgFundo;
+let imgFundoFim; 
+let fonteArcade; // NOVA VARIÁVEL para a fonte
 
 function preload() {
   imgFundo = loadImage('assets/background.png');
+  imgFundoFim = loadImage('assets/background2.png'); 
+  
+  // CARREGAR A FONTE AQUI
+  fonteArcade = loadFont('assets/ARCADE_N.TTF'); 
 }
 
 function setup() {
   createCanvas(1280, 720); 
   textAlign(CENTER, CENTER);
+  
+  // APLICAR A FONTE A TODO O JOGO
+  textFont(fonteArcade); 
 }
 
 function draw() {
