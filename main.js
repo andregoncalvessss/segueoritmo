@@ -12,7 +12,6 @@ function setup() {
 }
 
 function draw() {
-  // Gestor de cenas: decide qual ficheiro desenhar
   if (ecra === 0) {
     menuPrincipal();
   } else if (ecra === 1) {
