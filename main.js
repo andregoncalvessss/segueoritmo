@@ -1,23 +1,27 @@
+// --- main.js ---
+
 // Variáveis Globais do Jogo
 let ecra = 0; 
 let imgFundo;
 let imgFundoFim; 
-let fonteArcade; // NOVA VARIÁVEL para a fonte
+let fonteArcade; 
+let video; // 1. NOVA VARIÁVEL GLOBAL PARA A WEBCAM
 
 function preload() {
   imgFundo = loadImage('assets/background.png');
   imgFundoFim = loadImage('assets/background2.png'); 
-  
-  // CARREGAR A FONTE AQUI
   fonteArcade = loadFont('assets/ARCADE_N.TTF'); 
 }
 
 function setup() {
   createCanvas(1280, 720); 
   textAlign(CENTER, CENTER);
-  
-  // APLICAR A FONTE A TODO O JOGO
   textFont(fonteArcade); 
+  
+  // 2. INICIALIZAR A WEBCAM AQUI
+  video = createCapture(VIDEO);
+  video.size(640, 480); // Resolução da câmara
+  video.hide();         // Esconde o elemento HTML extra
 }
 
 function draw() {
