@@ -11,14 +11,14 @@ function menuPrincipal() {
   // CONTORNO A PRETO PARA OS BOTÕES
   stroke(0);
   strokeWeight(4);
-  fill(220); 
+  fill(255);
   
   // BOTÕES (largura 300, X 490)
   rect(490, 300, 300, 60, 10);
-  rect(490, 420, 300, 60, 10); 
+  rect(490, 420, 300, 60, 10);
   
   // DESLIGAR O CONTORNO PARA O TEXTO
-  noStroke(); 
+  noStroke();
   
   // TEXTO DOS BOTÕES
   fill(0);
