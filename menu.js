@@ -28,11 +28,16 @@ function menuPrincipal() {
   textAlign(CENTER, CENTER);
 }
 
+// --- menu.js (apenas a função do clique) ---
+
 function cliqueMenu() {
-  // A zona de clique mantém-se entre 490 e 790
   if (mouseX > 490 && mouseX < 790) {
     if (mouseY > 300 && mouseY < 360) {
-      ecra = 1; // Vai para Jogo
+      ecra = 1; // Vai para o Jogo
+      
+      // AUMENTA O CANVAS PARA CABER A BARRA (144) E A CÂMARA (720)
+      resizeCanvas(1280, 864); 
+      
     } else if (mouseY > 420 && mouseY < 480) {
       ecra = 2; // Vai para Instruções
     }

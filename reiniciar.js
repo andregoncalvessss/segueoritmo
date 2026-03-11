@@ -18,8 +18,9 @@ function ecraReiniciar() {
 }
 
 function cliqueReiniciar() {
-  // ATUALIZAR A ZONA DE CLIQUE VERTICAL: agora verifica se o rato está entre o Y 550 e 610 (550 + 60 de altura)
+  // A tua zona de clique atual
   if (mouseX > 490 && mouseX < 790 && mouseY > 550 && mouseY < 610) {
-    ecra = 0;
+    ecra = 0; // Vai para o Menu
+    resizeCanvas(1280, 720); // GARANTE O TAMANHO NORMAL
   }
 }

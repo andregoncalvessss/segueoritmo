@@ -27,7 +27,9 @@ function instrucoes() {
 }
 
 function cliqueInstrucoes() {
-  if (mouseX > 540 && mouseX < 740 && mouseY > 500 && mouseY < 560) {
-    ecra = 0;
-  }
+  // Exemplo da tua zona de clique para voltar
+  // if (mouseX > ... && mouseY > ...) {
+      ecra = 0; // Vai para o Menu
+      resizeCanvas(1280, 720); // GARANTE O TAMANHO NORMAL
+  // }
 }

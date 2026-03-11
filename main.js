@@ -16,12 +16,10 @@ function preload() {
 function setup() {
   createCanvas(1280, 720); 
   textAlign(CENTER, CENTER);
-  textFont(fonteArcade); 
-  
-  // 2. INICIALIZAR A WEBCAM AQUI
+  textFont(fonteArcade);
   video = createCapture(VIDEO);
-  video.size(640, 480); // Resolução da câmara
-  video.hide();         // Esconde o elemento HTML extra
+  video.size(1280, 720); 
+  video.hide();         
 }
 
 function draw() {
