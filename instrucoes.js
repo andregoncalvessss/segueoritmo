@@ -27,7 +27,6 @@ function instrucoes() {
 }
 
 function cliqueInstrucoes() {
-  // Exemplo da tua zona de clique para voltar
   // if (mouseX > ... && mouseY > ...) {
       ecra = 0; // Vai para o Menu
       resizeCanvas(1280, 720); // GARANTE O TAMANHO NORMAL

@@ -2,8 +2,8 @@ function ecraReiniciar() {
   background(imgFundoFim); 
  
   // Contorno do botão
-  stroke(0);         
-  strokeWeight(4);   
+  stroke(0);
+  strokeWeight(4);
   fill(220);
 
   // BOTÃO MAIS PARA BAIXO: mudei o Y de 400 para 550

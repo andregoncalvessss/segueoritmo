@@ -8,10 +8,13 @@ function jogo() {
   rect(0, 0, 1280, 144); 
   
   // 2. DESENHAR A CÂMARA EM TAMANHO REAL (1280x720)
-  // Começa no Y=144 (logo abaixo da barra branca)
-  image(video, 0, 144, 1280, 720);
+  push();
+    translate(1280, 0);
+    scale(-1, 1);
+    image(video, 0, 144, 1280, 720);
+  pop();
   
-  // 3. TEXTOS (DENTRO DA BARRA BRANCA)
+  // 3. TEXTOS
   fill(0); 
   textSize(30);
   text("A TUA CAMARA ESTA ATIVA!", 640, 60);

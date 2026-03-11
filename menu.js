@@ -2,10 +2,10 @@ function menuPrincipal() {
   background(imgFundo);
   
   // TÍTULO COM CONTORNO
-  fill(255);         
-  stroke(0);         
-  strokeWeight(6);   
-  textSize(60);      
+  fill(255);
+  stroke(0);
+  strokeWeight(6);
+  textSize(60);
   text("SEGUE O RITMO", 640, 180);
   
   // CONTORNO A PRETO PARA OS BOTÕES
