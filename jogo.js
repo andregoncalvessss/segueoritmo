@@ -1,49 +1,94 @@
+// --- jogo.js ---
+
 function jogo() {
   background(30, 30, 50); 
 
-  // 1. BARRA BRANCA NO TOPO
+  // Fundo branco no topo (144px de altura)
   fill(255); 
-  noStroke(); // Garante que a barra não tem contorno preto
+  noStroke(); 
   rect(0, 0, 1280, 144); 
 
-  // 2. CÂMARA ESPELHADA (O teu código original, mantido intacto!)
+  // Câmara Espelhada
   push();
     translate(1280, 0);
     scale(-1, 1);
     image(video, 0, 144, 1280, 720);
   pop();
 
-  // 3. TÍTULO DO JOGO (Subimos para o Y = 45 para dar espaço ao botão)
-  fill(0); 
-  textSize(25); // Ajustado para caber bem com o botão por baixo
-  text("MEMORIZA A SEQUÊNCIA DOS MOVIMENTOS!", 640, 45);
+  // ============================================
+  // LÓGICA DE FASES (ESTADOS DO JOGO)
+  // ============================================
   
-  // 4. BOTÃO "MOSTRA SEQUENCIA"
-  stroke(0);         // Contorno preto para o botão
-  strokeWeight(4);   
-  fill(220);         // Cor do botão (cinzento claro)
-  
-  // Desenhar o botão: largura 360, altura 50. Para centrar: 640 - 180 = 460
-  rect(460, 80, 360, 50, 10);
-  
-  // 5. TEXTO DO BOTÃO
-  noStroke(); // Desligar contorno para o texto
-  fill(0);
-  textSize(18);
-  text("REVELAR SEQUÊNCIA", 640, 105); // Centrado dentro do botão
+  if (estadoJogo === 0) {
+    // FASE 0: Mostrar Título e Botão
+    fill(0); 
+    textSize(25); 
+    text("MEMORIZA A SEQUÊNCIA DOS MOVIMENTOS!", 640, 45);
+    
+    stroke(0);         
+    strokeWeight(4);   
+    fill(220);         
+    rect(460, 80, 360, 50, 10);
+    
+    noStroke(); 
+    fill(0);
+    textSize(18);
+    text("REVELAR SEQUÊNCIA", 640, 105); 
+    
+  } else if (estadoJogo === 1) {
+    // FASE 1: MOSTRAR IMAGENS MAIORES E O TIMER
+    let tempoPassado = millis() - temporizador;
+    
+    if (tempoPassado < 4000) {
+      
+      // 1ª IMAGEM 
+      image(sequenciaAtual[0], 420, 22, 125, 100); 
+      
+      // SETA 
+      image(imgSeta, 600, 42, 80, 60); 
+      
+      // 2ª IMAGEM 
+      image(sequenciaAtual[1], 735, 22, 125, 100); 
+      
+      // ==========================================
+      // NOVO: TIMER (Barra verde a encolher)
+      // ==========================================
+      // A largura vai de 1280 até 0 consoante o tempo passado
+      let larguraBarra = 1280 - (tempoPassado / 4000) * 1280;
+      
+      fill(0, 220, 0); // Verde bem vivo
+      noStroke();
+      // Desenha na posição Y=134 (encostado ao fundo da barra branca) com altura 10
+      rect(0, 134, larguraBarra, 10);
+      
+    } else {
+      // Avança para a Fase 2
+      estadoJogo = 2;
+    }
+    
+  } else if (estadoJogo === 2) {
+    // FASE 2: Hora do jogador imitar
+    fill(255, 0, 0); 
+    textSize(30); 
+    text("AGORA É A TUA VEZ!", 640, 72);
+  }
 }
 
 function cliqueJogo() {
-  // VERIFICA SE O JOGADOR CLICOU NO BOTÃO
-  // O X vai de 460 a 820 (460 + 360). O Y vai de 80 a 130 (80 + 50).
-  if (mouseX > 460 && mouseX < 820 && mouseY > 80 && mouseY < 130) {
-    
-    // Apenas um aviso na consola para saberes que o botão funciona
-    console.log("Clicou em MOSTRA SEQUENCIA!");
-    
-  } else {
-    // Se clicar em qualquer outro lado (na câmara, etc.), vai para o Game Over
-    ecra = 3; 
-    resizeCanvas(1280, 720); // Volta ao tamanho normal para os menus
+  if (estadoJogo === 0) {
+    if (mouseX > 460 && mouseX < 820 && mouseY > 80 && mouseY < 130) {
+      
+      sequenciaAtual = [];
+      sequenciaAtual.push(random(imgPoses));
+      sequenciaAtual.push(random(imgPoses));
+      
+      temporizador = millis();
+      estadoJogo = 1; 
+      
+    } else {
+      ecra = 3; 
+      estadoJogo = 0; 
+      resizeCanvas(1280, 720);
+    }
   }
 }
