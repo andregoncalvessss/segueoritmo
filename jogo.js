@@ -1,5 +1,7 @@
 // --- jogo.js ---
 
+let tempoInicioPose = 0; 
+
 function getEscalaX() { return 1280 / (video.elt.videoWidth || 640); }
 function getEscalaY() { return 720 / (video.elt.videoHeight || 480); }
 
@@ -36,6 +38,7 @@ function gerarSequencia(nivel) {
   tempoNaPose = 0; 
   esperandoProximaPose = false;
   temporizador = millis();
+  tempoInicioPose = millis(); 
 }
 
 function jogo() {
@@ -44,7 +47,7 @@ function jogo() {
 
   fill(0); textAlign(LEFT, TOP); textSize(20);
   text("NIVEL: " + nivelAtual, 20, 20);
-  text("PONTOS: " + pontuacao, 20, 50);
+  text("PONTOS: " + pontuacao, 20, 50); 
   textAlign(CENTER, CENTER); 
 
   push();
@@ -83,6 +86,7 @@ function jogo() {
     } else {
       estadoJogo = 2;
       textoFeedback = "AGORA E A TUA VEZ!"; 
+      tempoInicioPose = millis(); // O cronómetro a sério arranca aqui!
     }
     
   } else if (estadoJogo === 2) {
@@ -114,7 +118,6 @@ function jogo() {
       text("DEBUG: SKIP", 1175, 40);
     }
 
-    // DESENHAR O TEXTO COM CORES DISTINTAS
     if (esperandoProximaPose) {
        fill(0, 180, 0); 
        textSize(25); 
@@ -158,7 +161,6 @@ function jogo() {
             esperandoProximaPose = false;
             nivelAtual++;
             if (nivelAtual > 5) {
-               console.log("JOGO COMPLETO!");
                ecra = 3; estadoJogo = 0; resizeCanvas(1280, 720);
             } else {
                gerarSequencia(nivelAtual);
@@ -172,14 +174,20 @@ function jogo() {
             fill(0, 255, 0); noStroke(); rect(0, 134, (tempoNaPose / 20) * 1280, 10);
             
             if (tempoNaPose > 20) { 
-               pontuacao += 100;
+               // --- LÓGICA DE PONTUAÇÃO (QUANTO MAIS RÁPIDO, MAIS PONTOS) ---
+               let tempoGasto = (millis() - tempoInicioPose) / 1000;
+               // Máx de 100 pontos, perde 5 pontos por cada segundo que demorar. Minimo de 10.
+               let pontosGanhos = floor(max(10, 100 - (tempoGasto * 5))); 
+               pontuacao += pontosGanhos;
+               // ------------------------------------------------------------
+
                poseAtualAlvo++; 
                tempoNaPose = 0;
+               tempoInicioPose = millis(); // Reset para a PRÓXIMA pose
                
                if (poseAtualAlvo >= sequenciaAtual.length) {
                   esperandoProximaPose = true;
                   tempoEspera = millis();
-                  // SE FOR O NÍVEL 5, DIZ "TERMINASTE!", SENÃO DIZ "PREPARA-TE..."
                   if (nivelAtual >= 5) {
                      textoFeedback = "TERMINASTE!";
                   } else {
@@ -212,14 +220,19 @@ function cliqueJogo() {
   } else if (estadoJogo === 2) {
     if (mouseX > 1100 && mouseX < 1250 && mouseY > 20 && mouseY < 60) {
       if (!esperandoProximaPose) {
-         pontuacao += 100;
+         // --- O SKIP AGORA TAMBÉM USA A MESMA LÓGICA DE TEMPO ---
+         let tempoGasto = (millis() - tempoInicioPose) / 1000;
+         let pontosGanhos = floor(max(10, 100 - (tempoGasto * 5))); 
+         pontuacao += pontosGanhos;
+         // -------------------------------------------------------
+         
          poseAtualAlvo++; 
          tempoNaPose = 0;
+         tempoInicioPose = millis(); 
          
          if (poseAtualAlvo >= sequenciaAtual.length) {
             esperandoProximaPose = true;
             tempoEspera = millis();
-            // SE FOR O NÍVEL 5, DIZ "TERMINASTE!", SENÃO DIZ "PREPARA-TE..."
             if (nivelAtual >= 5) {
                textoFeedback = "TERMINASTE!";
             } else {
@@ -263,29 +276,16 @@ function verificarPose(pose, idPose) {
   let dirBaixo = pulsoDir.y > (ombroDir.y + margem);
   let dirMeio = !dirNoAr && !dirBaixo;
   
-  if (idPose === '2maosnoar') {
-     return esqNoAr && dirNoAr;
-  }
-  
-  if (idPose === 'maoDireita') {
-     return dirMeio && esqBaixo; 
-  }
-  
-  if (idPose === 'maoEsquerda') {
-     return esqMeio && dirBaixo;
-  }
-  
-  if (idPose === 'posicaoT') {
-     return esqMeio && dirMeio;
-  }
+  if (idPose === '2maosnoar') return esqNoAr && dirNoAr;
+  if (idPose === 'maoDireita') return dirMeio && esqBaixo; 
+  if (idPose === 'maoEsquerda') return esqMeio && dirBaixo;
+  if (idPose === 'posicaoT') return esqMeio && dirMeio;
   
   if (idPose === 'pernaEsquerda') {
      if (!esqMeio || !dirMeio) return false;
      if (!joelhoEsq || !joelhoDir || joelhoEsq.confidence < 0.1 || joelhoDir.confidence < 0.1) return false;
-     
      let pernaEsqNoAr = joelhoEsq.y < (joelhoDir.y - tamanhoTronco * 0.10); 
      return pernaEsqNoAr;
   }
-
   return false;
 }
