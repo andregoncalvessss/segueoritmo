@@ -1,5 +1,3 @@
-// --- jogo.js ---
-
 function getEscalaX() { return 1280 / (video.elt.videoWidth || 640); }
 function getEscalaY() { return 720 / (video.elt.videoHeight || 480); }
 
@@ -33,6 +31,7 @@ function jogo() {
     noStroke(); fill(0); textSize(18); text("REVELAR SEQUÊNCIA", 640, 105); 
     
   } else if (estadoJogo === 1) {
+    // FASE 1: MOSTRAR AS IMAGENS PARA DECORAR
     let tempoPassado = millis() - temporizador;
     if (tempoPassado < 4000) {
       image(sequenciaAtual[0].img, 420, 22, 125, 100); 
@@ -45,15 +44,35 @@ function jogo() {
     }
     
   } else if (estadoJogo === 2) {
+    // FASE 2: VERDADEIRO JOGO DE MEMÓRIA (CARTAS ESCONDIDAS)
+    
     if (poseAtualAlvo === 0) {
-       tint(255, 255); image(sequenciaAtual[0].img, 480, 22, 100, 80); 
-       tint(255, 100); image(sequenciaAtual[1].img, 700, 22, 100, 80); 
+       // Nenhuma pose feita: Ambas as cartas estão escondidas (com um "?")
+       fill(80); stroke(255); strokeWeight(3);
+       rect(480, 22, 100, 80, 10);
+       rect(700, 22, 100, 80, 10);
+       
+       fill(255); noStroke(); textSize(40);
+       text("?", 480 + 50, 22 + 40); // Centro da carta 1
+       text("?", 700 + 50, 22 + 40); // Centro da carta 2
+       
     } else {
-       tint(0, 255, 0); image(sequenciaAtual[0].img, 480, 22, 100, 80);
-       tint(255, 255); image(sequenciaAtual[1].img, 700, 22, 100, 80);
+       // A primeira pose já foi acertada e é revelada! A segunda continua escondida.
+       tint(0, 255, 0); // Fica verde para mostrar o sucesso
+       image(sequenciaAtual[0].img, 480, 22, 100, 80);
+       noTint();
+       
+       fill(80); stroke(255); strokeWeight(3);
+       rect(700, 22, 100, 80, 10);
+       
+       fill(255); noStroke(); textSize(40);
+       text("?", 700 + 50, 22 + 40);
     }
     noTint(); 
-    fill(255, 0, 0); textSize(20); text("IMITA A IMAGEM ILUMINADA!", 640, 125);
+    
+    // O NOVO TEXTO DE INCENTIVO
+    fill(255, 0, 0); textSize(20); 
+    text("AGORA E A TUA VEZ!", 640, 125);
 
     if (poses.length > 0) {
       let pose = poses[0]; 
@@ -87,6 +106,8 @@ function jogo() {
          if (tempoNaPose > 20) { 
             poseAtualAlvo++; 
             tempoNaPose = 0; 
+            
+            // Quando passa as duas imagens: SUCESSO!
             if (poseAtualAlvo > 1) {
                console.log("SUCESSO!");
                ecra = 3; estadoJogo = 0; resizeCanvas(1280, 720);
@@ -105,19 +126,16 @@ function cliqueJogo() {
       
       sequenciaAtual = [];
       
-      // 1. Escolhe a primeira pose e guarda na sequência
       let primeiraPose = random(imgPoses);
       sequenciaAtual.push(primeiraPose);
       
-      // 2. Escolhe a segunda pose
+
       let segundaPose = random(imgPoses);
       
-      // 3. Enquanto a segunda pose for IGUAL à primeira, continua a sortear!
       while (segundaPose.id === primeiraPose.id) {
         segundaPose = random(imgPoses);
       }
       
-      // 4. Quando finalmente for diferente, guarda na sequência
       sequenciaAtual.push(segundaPose);
       
       poseAtualAlvo = 0; 
@@ -133,11 +151,7 @@ function cliqueJogo() {
   }
 }
 
-// ==============================================================
-// LÓGICA DE DETEÇÃO - MAPEAMENTO DIRETO E CORRETO
-// ==============================================================
 function verificarPose(pose, idPose) {
-  // As variáveis recolhem a anatomia real do jogador
   let pulsoEsq = pose.left_wrist;    
   let pulsoDir = pose.right_wrist;     
   let ombroEsq = pose.left_shoulder; 
@@ -150,7 +164,7 @@ function verificarPose(pose, idPose) {
   if (!pulsoEsq || !pulsoDir || !ombroEsq || !ombroDir) return false;
   if (pulsoEsq.confidence < 0.1 || pulsoDir.confidence < 0.1) return false;
 
-  // Régua Proporcional
+  
   let tamanhoTronco = 100;
   if (ancaEsq && ancaEsq.confidence > 0.1) {
     tamanhoTronco = abs(ombroEsq.y - ancaEsq.y);
@@ -160,29 +174,25 @@ function verificarPose(pose, idPose) {
 
   let margem = tamanhoTronco * 0.35; 
 
-  // LADO ESQUERDO FÍSICO (Aparece à esquerda no ecrã)
+  
   let esqNoAr = pulsoEsq.y < (ombroEsq.y - margem);  
   let esqBaixo = pulsoEsq.y > (ombroEsq.y + margem); 
   let esqMeio = !esqNoAr && !esqBaixo;       
-
-  // LADO DIREITO FÍSICO (Aparece à direita no ecrã)
   let dirNoAr = pulsoDir.y < (ombroDir.y - margem);
   let dirBaixo = pulsoDir.y > (ombroDir.y + margem);
   let dirMeio = !dirNoAr && !dirBaixo;
 
-  // 4. VALIDAÇÃO SEM INVERSÕES
+ 
   
   if (idPose === '2maosnoar') {
      return esqNoAr && dirNoAr;
   }
   
   if (idPose === 'maoDireita') {
-     // A imagem tem o braço na DIREITA. O jogador levanta a sua mão DIREITA.
      return dirMeio && esqBaixo; 
   }
   
   if (idPose === 'maoEsquerda') {
-     // A imagem tem o braço na ESQUERDA. O jogador levanta a sua mão ESQUERDA.
      return esqMeio && dirBaixo;
   }
   
@@ -193,8 +203,6 @@ function verificarPose(pose, idPose) {
   if (idPose === 'pernaEsquerda') {
      if (!esqMeio || !dirMeio) return false;
      if (!joelhoEsq || !joelhoDir || joelhoEsq.confidence < 0.1 || joelhoDir.confidence < 0.1) return false;
-     
-     // A imagem tem a perna levantada na ESQUERDA. O jogador levanta a perna ESQUERDA.
      let pernaEsqNoAr = joelhoEsq.y < (joelhoDir.y - tamanhoTronco * 0.25); 
      return pernaEsqNoAr;
   }
