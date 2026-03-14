@@ -15,7 +15,13 @@ let temporizador = 0;
 let poseAtualAlvo = 0; 
 let tempoNaPose = 0;   
 
-// NOVA VARIÁVEL DA IA (MoveNet)
+// VARIÁVEIS DE NÍVEL, PONTUAÇÃO E FEEDBACK
+let nivelAtual = 1;
+let pontuacao = 0;
+let esperandoProximaPose = false;
+let tempoEspera = 0;
+let textoFeedback = ""; // Guarda a frase motivadora atual
+
 let bodyPose; 
 let poses = []; 
 
@@ -31,7 +37,6 @@ function preload() {
   imgPoses[3] = { img: loadImage('assets/pernaEsquerda.png'), id: 'pernaEsquerda' }; 
   imgPoses[4] = { img: loadImage('assets/posicaoT.png'), id: 'posicaoT' };
   
-  // CARREGA O NOVO MODELO MOVENET
   bodyPose = ml5.bodyPose("MoveNet"); 
 }
 
@@ -40,14 +45,12 @@ function setup() {
   textAlign(CENTER, CENTER);
   textFont(fonteArcade);
   
-  video = createCapture(VIDEO);
-  video.size(1280, 720); 
-  video.hide();         
-
-  // LIGA O RECONHECIMENTO AO VÍDEO
-  bodyPose.detectStart(video, resultados => {
-    poses = resultados;
+  video = createCapture(VIDEO, function() {
+    bodyPose.detectStart(video, resultados => {
+      poses = resultados;
+    });
   });
+  video.hide();         
 }
 
 function draw() {
