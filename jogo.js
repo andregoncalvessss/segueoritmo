@@ -49,8 +49,18 @@ function jogo(isPausado = false) {
 
   fill(0); textAlign(LEFT, TOP); textSize(20);
   text("NIVEL: " + nivelAtual, 20, 20);
-  text("PONTOS: " + pontuacao, 20, 50); 
-  textAlign(CENTER, CENTER); 
+  text("PONTOS: " + pontuacao, 20, 50);
+  // Mostrar dificuldade escolhida
+  let txtDificuldade = "";
+  if (typeof tempoPorExercicio !== 'undefined') {
+    if (tempoPorExercicio === 4000) txtDificuldade = "Fácil";
+    else if (tempoPorExercicio === 2500) txtDificuldade = "Média";
+    else if (tempoPorExercicio === 1500) txtDificuldade = "Difícil";
+  }
+  if (txtDificuldade !== "") {
+    text("Dificuldade: " + txtDificuldade, 20, 80);
+  }
+  textAlign(CENTER, CENTER);
 
   // === BOTÕES SEMPRE VISÍVEIS DURANTE O JOGO ===
   if (estadoJogo > 0) {
@@ -316,6 +326,21 @@ function verificarPose(pose, idPose) {
      if (!joelhoEsq || !joelhoDir || joelhoEsq.confidence < 0.1 || joelhoDir.confidence < 0.1) return false;
      let pernaEsqNoAr = joelhoEsq.y < (joelhoDir.y - tamanhoTronco * 0.10); 
      return pernaEsqNoAr;
+  }
+  if (idPose === 'MaoDireitaLevantada') {
+    // Mão direita levantada: pulso direito acima do ombro direito
+    return pulsoDir.y < (ombroDir.y - margem);
+  }
+  if (idPose === 'MaoEsquerdaLevantada') {
+    // Mão esquerda levantada: pulso esquerdo acima do ombro esquerdo
+    return pulsoEsq.y < (ombroEsq.y - margem);
+  }
+  if (idPose === 'Estrela') {
+    // Estrela: ambos braços levantados e pernas afastadas
+    let bracosLevantados = pulsoEsq.y < (ombroEsq.y - margem) && pulsoDir.y < (ombroDir.y - margem);
+    let pernasAfastadas = ancaEsq && ancaDir && joelhoEsq && joelhoDir &&
+      (abs(joelhoEsq.x - joelhoDir.x) > abs(ancaEsq.x - ancaDir.x) * 1.2);
+    return bracosLevantados && pernasAfastadas;
   }
   return false;
 }

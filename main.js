@@ -39,6 +39,9 @@ function preload() {
   imgPoses[2] = { img: loadImage('assets/maoEsquerda.png'), id: 'maoEsquerda' };
   imgPoses[3] = { img: loadImage('assets/pernaEsquerda.png'), id: 'pernaEsquerda' }; 
   imgPoses[4] = { img: loadImage('assets/posicaoT.png'), id: 'posicaoT' };
+  imgPoses[5] = { img: loadImage('assets/MaoEsquerdaLevantada.png'), id: 'MaoEsquerdaLevantada' };
+  imgPoses[6] = { img: loadImage('assets/MaoDireitaLevantada.png'), id: 'MaoDireitaLevantada' };
+  imgPoses[7] = { img: loadImage('assets/estrela.png'), id: 'Estrela' };
   
   bodyPose = ml5.bodyPose("MoveNet"); 
 }
