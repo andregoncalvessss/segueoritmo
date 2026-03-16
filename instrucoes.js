@@ -1,3 +1,5 @@
+// --- instrucoes.js ---
+
 function instrucoes() {
   background(255);
 
@@ -27,8 +29,16 @@ function instrucoes() {
 }
 
 function cliqueInstrucoes() {
-  // if (mouseX > ... && mouseY > ...) {
-      ecra = 0; // Vai para o Menu
-      resizeCanvas(1280, 720); // GARANTE O TAMANHO NORMAL
-  // }
+  // Verifica se o rato clicou dentro da caixa do botão VOLTAR
+  if (mouseX > 540 && mouseX < 740 && mouseY > 500 && mouseY < 560) {
+    
+    // Volta para o ecrã de onde vieste (0 = Menu, 5 = Pausa)
+    ecra = ecraAnterior; 
+    
+    // Se voltar para o Menu Principal, ajusta o canvas para o tamanho original
+    if (ecra === 0) {
+      resizeCanvas(1280, 720); 
+    }
+    // Se voltar para a Pausa, não mexe no Canvas porque ele já está no tamanho do jogo (1280, 864)
+  }
 }

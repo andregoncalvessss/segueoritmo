@@ -1,7 +1,5 @@
 // --- jogo.js ---
 
-let tempoInicioPose = 0; 
-
 function getEscalaX() { return 1280 / (video.elt.videoWidth || 640); }
 function getEscalaY() { return 720 / (video.elt.videoHeight || 480); }
 
@@ -41,14 +39,34 @@ function gerarSequencia(nivel) {
   tempoInicioPose = millis(); 
 }
 
-function jogo() {
+// O JOGO AGORA RECEBE UM AVISO SE ESTÁ EM PAUSA OU NÃO
+function jogo(isPausado = false) {
   background(30, 30, 50); 
   fill(255); noStroke(); rect(0, 0, 1280, 144); 
+
+  // Ajusta o relógio interno se estiver na pausa
+  let agora = isPausado ? tempoPausaInicio : millis();
 
   fill(0); textAlign(LEFT, TOP); textSize(20);
   text("NIVEL: " + nivelAtual, 20, 20);
   text("PONTOS: " + pontuacao, 20, 50); 
   textAlign(CENTER, CENTER); 
+
+  // === BOTÕES SEMPRE VISÍVEIS DURANTE O JOGO ===
+  if (estadoJogo > 0) {
+    // BOTÃO DE PAUSA
+    fill(220); stroke(0); strokeWeight(3);
+    rect(1000, 20, 50, 40, 5); 
+    fill(0); noStroke();
+    rect(1016, 28, 6, 24); 
+    rect(1028, 28, 6, 24); 
+
+    // BOTÃO DE DEBUG
+    fill(255, 100, 100); stroke(0); strokeWeight(2);
+    rect(1070, 20, 150, 40, 5); 
+    fill(0); noStroke(); textSize(15);
+    text("DEBUG: SKIP", 1145, 40);
+  }
 
   push();
     translate(1280, 0); scale(-1, 1);
@@ -61,7 +79,7 @@ function jogo() {
     noStroke(); fill(0); textSize(18); text("REVELAR SEQUÊNCIA", 640, 105); 
     
   } else if (estadoJogo === 1) {
-    let tempoPassado = millis() - temporizador;
+    let tempoPassado = agora - temporizador;
     
     let numPoses = sequenciaAtual.length;
     let larguraCard = 100;
@@ -84,9 +102,12 @@ function jogo() {
       let larguraBarra = 1280 - (tempoPassado / tempoParaMemorizar) * 1280;
       fill(0, 220, 0); noStroke(); rect(0, 134, larguraBarra, 10);
     } else {
-      estadoJogo = 2;
-      textoFeedback = "AGORA E A TUA VEZ!"; 
-      tempoInicioPose = millis(); // O cronómetro a sério arranca aqui!
+      // SÓ AVANÇA PARA A VEZ DO JOGADOR SE NÃO ESTIVER PAUSADO
+      if (!isPausado) { 
+        estadoJogo = 2;
+        textoFeedback = "AGORA E A TUA VEZ!"; 
+        tempoInicioPose = millis(); 
+      }
     }
     
   } else if (estadoJogo === 2) {
@@ -110,14 +131,8 @@ function jogo() {
         text("?", x + 50, 22 + 40);
       }
     }
-    
-    if (!esperandoProximaPose) {
-      fill(255, 100, 100); stroke(0); strokeWeight(2);
-      rect(1100, 20, 150, 40, 5);
-      fill(0); noStroke(); textSize(15);
-      text("DEBUG: SKIP", 1175, 40);
-    }
 
+    // Feedback Visual
     if (esperandoProximaPose) {
        fill(0, 180, 0); 
        textSize(25); 
@@ -156,50 +171,55 @@ function jogo() {
          }
       }
 
-      if (esperandoProximaPose) {
-         if (millis() - tempoEspera > 2000) {
-            esperandoProximaPose = false;
-            nivelAtual++;
-            if (nivelAtual > 5) {
-               ecra = 3; estadoJogo = 0; resizeCanvas(1280, 720);
-            } else {
-               gerarSequencia(nivelAtual);
-               estadoJogo = 1; 
-            }
-         }
-      } else {
-         let idAlvo = sequenciaAtual[poseAtualAlvo].id;
-         if (verificarPose(pose, idAlvo)) {
-            tempoNaPose++; 
-            fill(0, 255, 0); noStroke(); rect(0, 134, (tempoNaPose / 20) * 1280, 10);
-            
-            if (tempoNaPose > 20) { 
-               // --- LÓGICA DE PONTUAÇÃO (QUANTO MAIS RÁPIDO, MAIS PONTOS) ---
-               let tempoGasto = (millis() - tempoInicioPose) / 1000;
-               // Máx de 100 pontos, perde 5 pontos por cada segundo que demorar. Minimo de 10.
-               let pontosGanhos = floor(max(10, 100 - (tempoGasto * 5))); 
-               pontuacao += pontosGanhos;
-               // ------------------------------------------------------------
+      // === SE NÃO ESTIVER PAUSADO, VERIFICA AS POSES E TEMPO ===
+      if (!isPausado) {
+        if (esperandoProximaPose) {
+           if (millis() - tempoEspera > 2000) {
+              esperandoProximaPose = false;
+              nivelAtual++;
+              if (nivelAtual > 5) {
+                 ecra = 3; estadoJogo = 0; resizeCanvas(1280, 720);
+              } else {
+                 gerarSequencia(nivelAtual);
+                 estadoJogo = 1; 
+              }
+           }
+        } else {
+           let idAlvo = sequenciaAtual[poseAtualAlvo].id;
+           if (verificarPose(pose, idAlvo)) {
+              tempoNaPose++; 
+              fill(0, 255, 0); noStroke(); rect(0, 134, (tempoNaPose / 20) * 1280, 10);
+              
+              if (tempoNaPose > 20) { 
+                 let tempoGasto = (millis() - tempoInicioPose) / 1000;
+                 let pontosGanhos = floor(max(10, 100 - (tempoGasto * 5))); 
+                 pontuacao += pontosGanhos;
 
-               poseAtualAlvo++; 
-               tempoNaPose = 0;
-               tempoInicioPose = millis(); // Reset para a PRÓXIMA pose
-               
-               if (poseAtualAlvo >= sequenciaAtual.length) {
-                  esperandoProximaPose = true;
-                  tempoEspera = millis();
-                  if (nivelAtual >= 5) {
-                     textoFeedback = "TERMINASTE!";
-                  } else {
-                     textoFeedback = "MUITO BOM! PREPARA-TE...";
-                  }
-               } else {
-                  let frases = ["BOA!", "ISSO MESMO!", "EXCELENTE!", "PERFEITO!"];
-                  textoFeedback = random(frases);
-               }
-            }
-         } else {
-            tempoNaPose = 0; 
+                 poseAtualAlvo++; 
+                 tempoNaPose = 0;
+                 tempoInicioPose = millis(); 
+                 
+                 if (poseAtualAlvo >= sequenciaAtual.length) {
+                    esperandoProximaPose = true;
+                    tempoEspera = millis();
+                    if (nivelAtual >= 5) {
+                       textoFeedback = "TERMINASTE!";
+                    } else {
+                       textoFeedback = "MUITO BOM! PREPARA-TE...";
+                    }
+                 } else {
+                    let frases = ["BOA!", "ISSO MESMO!", "EXCELENTE!", "PERFEITO!"];
+                    textoFeedback = random(frases);
+                 }
+              }
+           } else {
+              tempoNaPose = 0; 
+           }
+        }
+      } else {
+         // SE ESTIVER PAUSADO, DESENHA SÓ A BARRA CONGELADA
+         if (!esperandoProximaPose && tempoNaPose > 0) {
+             fill(0, 255, 0); noStroke(); rect(0, 134, (tempoNaPose / 20) * 1280, 10);
          }
       }
     }
@@ -217,14 +237,24 @@ function cliqueJogo() {
     } else {
       ecra = 3; estadoJogo = 0; resizeCanvas(1280, 720);
     }
-  } else if (estadoJogo === 2) {
-    if (mouseX > 1100 && mouseX < 1250 && mouseY > 20 && mouseY < 60) {
-      if (!esperandoProximaPose) {
-         // --- O SKIP AGORA TAMBÉM USA A MESMA LÓGICA DE TEMPO ---
+  } 
+  
+  // === CLIQUES NOS BOTÕES DURANTE O JOGO (MEMORIZAR OU JOGAR) ===
+  if (estadoJogo === 1 || estadoJogo === 2) {
+    if (!esperandoProximaPose) { // Previne usar debug/pausa na transição de nível
+      
+      // --- CLIQUE NO BOTÃO DE PAUSA ---
+      if (mouseX > 1000 && mouseX < 1050 && mouseY > 20 && mouseY < 60) {
+        ecra = 5; 
+        tempoPausaInicio = millis(); 
+        return; 
+      }
+      
+      // --- CLIQUE NO BOTÃO DE DEBUG ---
+      if (mouseX > 1070 && mouseX < 1220 && mouseY > 20 && mouseY < 60) {
          let tempoGasto = (millis() - tempoInicioPose) / 1000;
          let pontosGanhos = floor(max(10, 100 - (tempoGasto * 5))); 
          pontuacao += pontosGanhos;
-         // -------------------------------------------------------
          
          poseAtualAlvo++; 
          tempoNaPose = 0;
