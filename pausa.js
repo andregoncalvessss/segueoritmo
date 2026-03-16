@@ -67,6 +67,7 @@ function cliquePausa() {
 
   // 2. CLIQUE EM "INSTRUÇÕES"
   if (mouseX > 490 && mouseX < 790 && mouseY > 430 && mouseY < 490) {
+    ecraAnterior = 1;
     ecra = 2; // Vai para o ecrã de instruções
   }
 
@@ -84,7 +85,7 @@ function cliquePausa() {
     // Reseta o estado do jogo para garantir novo início
     nivelAtual = 1;
     pontuacao = 0;
-    estadoJogo = 0; // Estado inicial
+    estadoJogo = 0;
     ecra = 0; // Volta para o menu principal
     resizeCanvas(1280, 720);
   }
