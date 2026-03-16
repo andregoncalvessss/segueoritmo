@@ -39,6 +39,7 @@ function cliqueMenu() {
       resizeCanvas(1280, 864); 
       
     } else if (mouseY > 420 && mouseY < 480) {
+      ecraAnterior = 0; // Guarda o menu como tela anterior
       ecra = 2; // Vai para Instruções
     }
   }
