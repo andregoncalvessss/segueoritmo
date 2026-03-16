@@ -1,11 +1,13 @@
+// --- menu.js ---
+
 function menuPrincipal() {
   background(imgFundo);
   
   // TÍTULO COM CONTORNO
-  fill(255);
-  stroke(0);
-  strokeWeight(6);
-  textSize(60);
+  fill(255);         
+  stroke(0);         
+  strokeWeight(6);   
+  textSize(60);      
   text("SEGUE O RITMO", 640, 180);
   
   // CONTORNO A PRETO PARA OS BOTÕES
@@ -28,8 +30,6 @@ function menuPrincipal() {
   textAlign(CENTER, CENTER);
 }
 
-// --- menu.js (apenas a função do clique) ---
-
 function cliqueMenu() {
   if (mouseX > 490 && mouseX < 790) {
     if (mouseY > 300 && mouseY < 360) {
@@ -39,7 +39,7 @@ function cliqueMenu() {
       resizeCanvas(1280, 864); 
       
     } else if (mouseY > 420 && mouseY < 480) {
-      ecraAnterior = 0; // Guarda o menu como tela anterior
+      ecraAnterior = 0; // <--- NOVO: Guarda o ecrã atual antes de ir
       ecra = 2; // Vai para Instruções
     }
   }

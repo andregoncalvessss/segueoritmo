@@ -22,7 +22,8 @@ let esperandoProximaPose = false;
 let tempoEspera = 0;
 let textoFeedback = ""; // Guarda a frase motivadora atual
 
-let tempoPausaInicio = 0; // <--- NOVO: Variável para controlar o tempo da pausa
+let tempoPausaInicio = 0; 
+let ecraAnterior = 0; // <--- NOVO: Guarda o ecrã de onde viemos antes de abrir as instruções
 
 let bodyPose; 
 let poses = []; 
@@ -60,8 +61,8 @@ function draw() {
   else if (ecra === 1) jogo();
   else if (ecra === 2) instrucoes();
   else if (ecra === 3) ecraReiniciar();
-  else if (ecra === 4) ecraDificuldade(); // <--- NOVO: Ecrã de Dificuldade
-  else if (ecra === 5) ecraPausa();       // <--- NOVO: Ecrã de Pausa
+  else if (ecra === 4) ecraDificuldade(); 
+  else if (ecra === 5) ecraPausa();       
 }
 
 function mousePressed() {
@@ -69,6 +70,6 @@ function mousePressed() {
   else if (ecra === 1) cliqueJogo();
   else if (ecra === 2) cliqueInstrucoes();
   else if (ecra === 3) cliqueReiniciar();
-  else if (ecra === 4) cliqueDificuldade(); // <--- NOVO: Clique na Dificuldade
-  else if (ecra === 5) cliquePausa();       // <--- NOVO: Clique na Pausa
+  else if (ecra === 4) cliqueDificuldade(); 
+  else if (ecra === 5) cliquePausa();       
 }
