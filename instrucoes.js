@@ -27,6 +27,7 @@ function instrucoes() {
 
 function cliqueInstrucoes() {
   if (mouseX > 540 && mouseX < 740 && mouseY > 500 && mouseY < 560) {
+    if (somClick.isLoaded()) somClick.play();
     ecra = ecraAnterior; 
     if (ecra === 0) {
       resizeCanvas(1280, 720); 

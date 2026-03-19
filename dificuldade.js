@@ -27,14 +27,17 @@ function ecraDificuldade() {
 function cliqueDificuldade() {
   if (mouseX > 440 && mouseX < 840) {
     if (mouseY > 250 && mouseY < 330) {
+      if (somClick.isLoaded()) somClick.play();
       tempoPorExercicio = 4000; 
       iniciarJogo();
     } 
     else if (mouseY > 380 && mouseY < 460) {
+      if (somClick.isLoaded()) somClick.play();
       tempoPorExercicio = 2500; 
       iniciarJogo();
     } 
     else if (mouseY > 510 && mouseY < 590) {
+      if (somClick.isLoaded()) somClick.play();
       tempoPorExercicio = 1500; 
       iniciarJogo();
     }
@@ -50,7 +53,7 @@ function iniciarJogo() {
   resizeCanvas(1280, 864);
 
   // Inicia a música de fundo em Loop
-  if (!somFundo.isPlaying()) {
+  if (!somFundo.isPlaying() && somFundo.isLoaded()) {
     somFundo.loop();
   }
 }

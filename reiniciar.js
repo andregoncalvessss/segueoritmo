@@ -14,10 +14,9 @@ function ecraReiniciar() {
 
 function cliqueReiniciar() {
   if (mouseX > 490 && mouseX < 790 && mouseY > 550 && mouseY < 610) {
+    if (somClick.isLoaded()) somClick.play();
     ecra = 0; 
     resizeCanvas(1280, 720);
-
-    // Para a música final ao voltar ao menu
     somPontuacao.stop();
   }
 }

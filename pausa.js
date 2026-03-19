@@ -42,6 +42,7 @@ function ecraPausa() {
 
 function cliquePausa() {
   if (mouseX > 490 && mouseX < 790 && mouseY > 320 && mouseY < 380) {
+    if (somClick.isLoaded()) somClick.play();
     let tempoPausado = millis() - tempoPausaInicio;
     temporizador += tempoPausado;
     tempoInicioPose += tempoPausado;
@@ -52,11 +53,13 @@ function cliquePausa() {
   }
 
   if (mouseX > 490 && mouseX < 790 && mouseY > 410 && mouseY < 470) {
+    if (somClick.isLoaded()) somClick.play();
     ecraAnterior = 1;
     ecra = 2; 
   }
 
   if (mouseX > 490 && mouseX < 790 && mouseY > 500 && mouseY < 560) {
+    if (somClick.isLoaded()) somClick.play();
     nivelAtual = 1;
     pontuacao = 0;
     gerarSequencia(nivelAtual);
@@ -65,13 +68,12 @@ function cliquePausa() {
   }
   
   if (mouseX > 590 && mouseX < 690 && mouseY > 590 && mouseY < 630) {
+    if (somClick.isLoaded()) somClick.play();
     nivelAtual = 1;
     pontuacao = 0;
     estadoJogo = 0;
     ecra = 0; 
     resizeCanvas(1280, 720);
-
-    // Para a música de fundo ao sair para o menu
     somFundo.stop();
   }
 }

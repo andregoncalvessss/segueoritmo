@@ -15,20 +15,21 @@ let temporizador = 0;
 let poseAtualAlvo = 0; 
 let tempoNaPose = 0;   
 
+// VARIÁVEIS DE NÍVEL, PONTUAÇÃO E FEEDBACK
 let nivelAtual = 1;
 let pontuacao = 0;
 let esperandoProximaPose = false;
 let tempoEspera = 0;
-let textoFeedback = ""; 
+let textoFeedback = ""; // Guarda a frase motivadora atual
 
 let tempoPausaInicio = 0; 
-let ecraAnterior = 0; 
+let ecraAnterior = 0; // Guarda o ecrã de onde viemos antes de abrir as instruções
 
 let bodyPose; 
 let poses = []; 
 
 // VARIÁVEIS DE SOM
-let somConcluido, somErro, somFundo, somPontuacao;
+let somConcluido, somErro, somFundo, somPontuacao, somClick;
 
 function preload() {
   imgFundo = loadImage('assets/background.png');
@@ -47,11 +48,12 @@ function preload() {
   
   bodyPose = ml5.bodyPose("MoveNet"); 
 
-  // CARREGAR SONS (Certifica-te que os ficheiros existem na pasta sounds)
+  // CARREGAR SONS
   somConcluido = loadSound('sounds/concluido.mp3');
   somErro = loadSound('sounds/erro.mp3');
   somFundo = loadSound('sounds/somdefundo.mp3');
-  somPontuacao = loadSound('sounds/pontuação.mp3'); // Sem acentos no ficheiro!
+  somPontuacao = loadSound('sounds/pontuação.mp3'); // Sem acentos no ficheiro físico!
+  somClick = loadSound('sounds/clicksound.mp3');    // O novo som de clique
 }
 
 function setup() {
@@ -77,6 +79,9 @@ function draw() {
 }
 
 function mousePressed() {
+  // Desbloqueia o áudio do navegador no primeiro clique!
+  userStartAudio();
+
   if (ecra === 0) cliqueMenu();
   else if (ecra === 1) cliqueJogo();
   else if (ecra === 2) cliqueInstrucoes();

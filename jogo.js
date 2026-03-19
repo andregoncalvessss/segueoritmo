@@ -189,7 +189,7 @@ function jogo(isPausado = false) {
                // === FIM DE JOGO (Completou os 5 Níveis) ===
                ecra = 3; estadoJogo = 0; resizeCanvas(1280, 720);
                somFundo.stop();
-               somPontuacao.play();
+               if (somPontuacao.isLoaded()) somPontuacao.play();
             } else {
                gerarSequencia(nivelAtual);
                estadoJogo = 1; 
@@ -302,9 +302,11 @@ function jogo(isPausado = false) {
 function cliqueJogo() {
   if (estadoJogo === 0) {
     if (mouseX > 460 && mouseX < 820 && mouseY > 80 && mouseY < 130) {
+      if (somClick.isLoaded()) somClick.play();
       nivelAtual = 1; pontuacao = 0; gerarSequencia(nivelAtual); estadoJogo = 1; resizeCanvas(1280, 864);
     } else {
-      // === FIM DE JOGO (CLIQUE FORA DO BOTÃO REVELAR SEQUÊNCIA) ===
+      // === FIM DE JOGO MANUAL ===
+      if (somClick.isLoaded()) somClick.play();
       ecra = 3; estadoJogo = 0; resizeCanvas(1280, 720);
       somFundo.stop();
       if (somPontuacao.isLoaded()) somPontuacao.play();
@@ -314,6 +316,7 @@ function cliqueJogo() {
     if (!esperandoProximaPose) { 
       let btnCx = 1235; let btnCy = 45; let btnRaio = 26;
       if (dist(mouseX, mouseY, btnCx, btnCy) < btnRaio) {
+        if (somClick.isLoaded()) somClick.play();
         ecra = 5; tempoPausaInicio = millis(); return; 
       }
     }

@@ -28,10 +28,12 @@ function menuPrincipal() {
 function cliqueMenu() {
   if (mouseX > 490 && mouseX < 790) {
     if (mouseY > 300 && mouseY < 360) {
+      if (somClick.isLoaded()) somClick.play();
       ecra = 4; 
       resizeCanvas(1280, 720); 
       
     } else if (mouseY > 420 && mouseY < 480) {
+      if (somClick.isLoaded()) somClick.play();
       ecraAnterior = 0; 
       ecra = 2; 
     }
