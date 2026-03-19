@@ -1,8 +1,6 @@
-// --- pausa.js ---
-
 function ecraPausa() {
-  // Fundo cinzento escuro, escondendo o jogo para não parecer encravado
-  background(50, 50, 50);
+  // mesma cor da dificuldade
+  background(30, 30, 50);
 
   // RETÂNGULO BRANCO CENTRAL
   fill(255);
@@ -16,77 +14,75 @@ function ecraPausa() {
   textSize(50);
   text("PAUSA", 640, 250);
 
-  // === DESENHAR OS BOTÕES ===
+  // === DESENHAR OS BOTÕES (Espaçamento uniforme de 30px) 
   stroke(0);
   strokeWeight(4);
   
-  // Botão 1: CONTINUAR
+  // Botão 1: CONTINUAR 
   fill(220);
-  rect(490, 330, 300, 60, 10);
+  rect(490, 320, 300, 60, 10);
   
-  // Botão 2: INSTRUÇÕES
+  // Botão 2: INSTRUÇÕES 
   fill(220);
-  rect(490, 430, 300, 60, 10);
+  rect(490, 410, 300, 60, 10);
 
-  // Botão 3: REINICIAR
+  // Botão 3: REINICIAR 
   fill(220);
-  rect(490, 530, 300, 60, 10);
+  rect(490, 500, 300, 60, 10);
 
-  // Botão 4: SAIR
+  // Botão 4: SAIR 
   fill(200, 0, 0);
-  rect(590, 610, 100, 40, 10); 
+  rect(590, 590, 100, 40, 10); 
 
-  // === TEXTOS DOS BOTÕES ===
+ 
   noStroke();
   fill(0);
   textSize(25);
-  text("CONTINUAR", 640, 360);
-  text("INSTRUCOES", 640, 460); // Sem til/cedilha caso a fonte não suporte
-  text("REINICIAR", 640, 560);
+  text("CONTINUAR", 640, 350);
+  text("INSTRUÇÕES", 640, 440); 
+  text("REINICIAR", 640, 530);
 
-  // Texto do botão SAIR
+ 
   fill(255);
   textSize(20);
-  text("SAIR", 640, 630);
+  text("SAÍR", 640, 610);
 }
 
 function cliquePausa() {
-  // 1. CLIQUE EM "CONTINUAR"
-  if (mouseX > 490 && mouseX < 790 && mouseY > 330 && mouseY < 390) {
+ 
+  if (mouseX > 490 && mouseX < 790 && mouseY > 320 && mouseY < 380) {
     let tempoPausado = millis() - tempoPausaInicio;
-    
-    // Compensa os relógios do jogo
+ 
     temporizador += tempoPausado;
     tempoInicioPose += tempoPausado;
     if (esperandoProximaPose) {
       tempoEspera += tempoPausado;
     }
     
-    ecra = 1; // Volta ao jogo
+    ecra = 1; 
   }
 
-  // 2. CLIQUE EM "INSTRUÇÕES"
-  if (mouseX > 490 && mouseX < 790 && mouseY > 430 && mouseY < 490) {
+
+  if (mouseX > 490 && mouseX < 790 && mouseY > 410 && mouseY < 470) {
     ecraAnterior = 1;
-    ecra = 2; // Vai para o ecrã de instruções
+    ecra = 2; 
   }
 
-  // 3. CLIQUE EM "REINICIAR"
-  if (mouseX > 490 && mouseX < 790 && mouseY > 530 && mouseY < 590) {
-    // Repõe tudo a zeros e recomeça o jogo direto
+ 
+  if (mouseX > 490 && mouseX < 790 && mouseY > 500 && mouseY < 560) {
     nivelAtual = 1;
     pontuacao = 0;
     gerarSequencia(nivelAtual);
     estadoJogo = 1; 
-    ecra = 1; // Volta para o jogo, já reiniciado
+    ecra = 1; 
   }
-  // 4. CLIQUE EM "SAIR"
-  if (mouseX > 490 && mouseX < 790 && mouseY > 630 && mouseY < 710) {
-    // Reseta o estado do jogo para garantir novo início
+  
+  
+  if (mouseX > 590 && mouseX < 690 && mouseY > 590 && mouseY < 630) {
     nivelAtual = 1;
     pontuacao = 0;
     estadoJogo = 0;
-    ecra = 0; // Volta para o menu principal
+    ecra = 0; 
     resizeCanvas(1280, 720);
   }
 }

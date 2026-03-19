@@ -53,12 +53,12 @@ function jogo(isPausado = false) {
   // Mostrar dificuldade escolhida
   let txtDificuldade = "";
   if (typeof tempoPorExercicio !== 'undefined') {
-    if (tempoPorExercicio === 4000) txtDificuldade = "Fácil";
-    else if (tempoPorExercicio === 2500) txtDificuldade = "Média";
-    else if (tempoPorExercicio === 1500) txtDificuldade = "Difícil";
+    if (tempoPorExercicio === 4000) txtDificuldade = "FÁCIL";
+    else if (tempoPorExercicio === 2500) txtDificuldade = "MÉDIA";
+    else if (tempoPorExercicio === 1500) txtDificuldade = "DIFÍCIL";
   }
   if (txtDificuldade !== "") {
-    text("Dificuldade: " + txtDificuldade, 20, 80);
+    text("DIFICULDADE: " + txtDificuldade, 20, 80);
   }
   textAlign(CENTER, CENTER);
 

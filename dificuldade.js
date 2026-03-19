@@ -12,19 +12,19 @@
     fill(0, 180, 0); stroke(255); strokeWeight(4);
     rect(440, 250, 400, 80, 15);
     fill(255); noStroke(); textSize(30);
-    text("FACIL", 640, 290);
+    text("FÁCIL", 640, 290);
 
     // Botão MÉDIA (2.5 segundos por imagem)
     fill(200, 150, 0); stroke(255); strokeWeight(4);
     rect(440, 380, 400, 80, 15);
     fill(255); noStroke(); textSize(30);
-    text("MEDIA", 640, 420);
+    text("MÉDIA", 640, 420);
 
     // Botão DIFÍCIL (1.5 segundos por imagem)
     fill(180, 0, 0); stroke(255); strokeWeight(4);
     rect(440, 510, 400, 80, 15);
     fill(255); noStroke(); textSize(30);
-    text("DIFICIL", 640, 550);
+    text("DIFÍCIL", 640, 550);
   }
 
   function cliqueDificuldade() {
