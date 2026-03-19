@@ -1,14 +1,12 @@
-
+// --- instrucoes.js ---
 
 function instrucoes() {
   background(255);
-
 
   fill(0);
   textSize(40);
   textAlign(CENTER, CENTER);
   text("Como Jogar!", 640, 150);
-
 
   textSize(22);
   textAlign(LEFT, TOP);
@@ -16,7 +14,6 @@ function instrucoes() {
   text("\n2. Repetir os movimentos quando aparecer\n   'Agora é a tua vez'.\n   Fazer os movimentos para a câmara.\n", 200, 260);
   text("\n\n\nNota: Manter alguma distância do ecrã,\npara que a câmara consiga captar corretamente.", 200, 320);
 
-  
   stroke(0);
   strokeWeight(4);
   fill(255);
@@ -29,14 +26,10 @@ function instrucoes() {
 }
 
 function cliqueInstrucoes() {
-  
   if (mouseX > 540 && mouseX < 740 && mouseY > 500 && mouseY < 560) {
-    
     ecra = ecraAnterior; 
-    
     if (ecra === 0) {
       resizeCanvas(1280, 720); 
     }
-    
   }
 }

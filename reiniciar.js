@@ -1,7 +1,7 @@
+// --- reiniciar.js ---
+
 function ecraReiniciar() {
   background(imgFundoFim); 
- 
-  // Contorno do botão
   stroke(0);         
   strokeWeight(4);   
   fill(220);
@@ -16,5 +16,8 @@ function cliqueReiniciar() {
   if (mouseX > 490 && mouseX < 790 && mouseY > 550 && mouseY < 610) {
     ecra = 0; 
     resizeCanvas(1280, 720);
+
+    // Para a música final ao voltar ao menu
+    somPontuacao.stop();
   }
 }

@@ -15,18 +15,20 @@ let temporizador = 0;
 let poseAtualAlvo = 0; 
 let tempoNaPose = 0;   
 
-// VARIÁVEIS DE NÍVEL, PONTUAÇÃO E FEEDBACK
 let nivelAtual = 1;
 let pontuacao = 0;
 let esperandoProximaPose = false;
 let tempoEspera = 0;
-let textoFeedback = ""; // Guarda a frase motivadora atual
+let textoFeedback = ""; 
 
 let tempoPausaInicio = 0; 
-let ecraAnterior = 0; // <--- NOVO: Guarda o ecrã de onde viemos antes de abrir as instruções
+let ecraAnterior = 0; 
 
 let bodyPose; 
 let poses = []; 
+
+// VARIÁVEIS DE SOM
+let somConcluido, somErro, somFundo, somPontuacao;
 
 function preload() {
   imgFundo = loadImage('assets/background.png');
@@ -44,6 +46,12 @@ function preload() {
   imgPoses[7] = { img: loadImage('assets/estrela.png'), id: 'Estrela' };
   
   bodyPose = ml5.bodyPose("MoveNet"); 
+
+  // CARREGAR SONS (Certifica-te que os ficheiros existem na pasta sounds)
+  somConcluido = loadSound('sounds/concluido.mp3');
+  somErro = loadSound('sounds/erro.mp3');
+  somFundo = loadSound('sounds/somdefundo.mp3');
+  somPontuacao = loadSound('sounds/pontuação.mp3'); // Sem acentos no ficheiro!
 }
 
 function setup() {
