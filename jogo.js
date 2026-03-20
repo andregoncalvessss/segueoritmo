@@ -1,7 +1,8 @@
 // --- jogo.js ---
 
-// Variável global para o mute
+// Variáveis globais para opções
 let isMuted = false;
+let mostrarEsqueleto = false; // Começa escondido por defeito
 
 function getEscalaX() { return 1280 / (video.elt.videoWidth || 640); }
 function getEscalaY() { return 720 / (video.elt.videoHeight || 480); }
@@ -190,22 +191,27 @@ function jogo(isPausado = false) {
 
     if (poses.length > 0) {
       let pose = poses[0]; 
-      desenharOsso(pose.left_shoulder, pose.left_elbow);
-      desenharOsso(pose.left_elbow, pose.left_wrist);
-      desenharOsso(pose.right_shoulder, pose.right_elbow);
-      desenharOsso(pose.right_elbow, pose.right_wrist);
-      desenharOsso(pose.left_shoulder, pose.left_hip);
-      desenharOsso(pose.right_shoulder, pose.right_hip);
-      desenharOsso(pose.left_hip, pose.right_hip);
-      desenharOsso(pose.left_hip, pose.left_knee);
-      desenharOsso(pose.right_hip, pose.right_knee);
-      let eX = getEscalaX(); let eY = getEscalaY();
-      for (let i = 0; i < pose.keypoints.length; i++) {
-         let ponto = pose.keypoints[i];
-         if (ponto.confidence > 0.1) { 
-            fill(255, 255, 0); noStroke();
-            ellipse(1280 - (ponto.x * eX), (ponto.y * eY) + 144, 15);
-         }
+      
+      // === APENAS DESENHA O ESQUELETO SE O MODO DEBUG (TECLA M) ESTIVER ATIVO ===
+      if (mostrarEsqueleto) {
+          desenharOsso(pose.left_shoulder, pose.left_elbow);
+          desenharOsso(pose.left_elbow, pose.left_wrist);
+          desenharOsso(pose.right_shoulder, pose.right_elbow);
+          desenharOsso(pose.right_elbow, pose.right_wrist);
+          desenharOsso(pose.left_shoulder, pose.left_hip);
+          desenharOsso(pose.right_shoulder, pose.right_hip);
+          desenharOsso(pose.left_hip, pose.right_hip);
+          desenharOsso(pose.left_hip, pose.left_knee);
+          desenharOsso(pose.right_hip, pose.right_knee);
+          
+          let eX = getEscalaX(); let eY = getEscalaY();
+          for (let i = 0; i < pose.keypoints.length; i++) {
+             let ponto = pose.keypoints[i];
+             if (ponto.confidence > 0.1) { 
+                fill(255, 255, 0); noStroke();
+                ellipse(1280 - (ponto.x * eX), (ponto.y * eY) + 144, 15);
+             }
+          }
       }
     }
 
@@ -330,17 +336,6 @@ function jogo(isPausado = false) {
        }
     }
   }
-
-  // ==========================================
-  // BOTÃO TEMPORÁRIO DE DEBUG (APAGAR DEPOIS)
-  // ==========================================
-  if (estadoJogo === 1 || estadoJogo === 2) {
-    fill(255, 120, 0); stroke(255); strokeWeight(3);
-    rect(1150, 650, 100, 40, 8);
-    fill(255); noStroke(); textSize(18); textAlign(CENTER, CENTER);
-    text("SKIP", 1200, 670);
-  }
-  // ==========================================
 }
 
 function cliqueJogo() {
@@ -360,43 +355,6 @@ function cliqueJogo() {
     }
   } 
   if (estadoJogo === 1 || estadoJogo === 2) {
-    
-    // ==========================================
-    // CLIQUE NO BOTÃO DEBUG (APAGAR DEPOIS)
-    // ==========================================
-    if (mouseX > 1150 && mouseX < 1250 && mouseY > 650 && mouseY < 690) {
-      if (somClick.isLoaded()) somClick.play();
-      
-      if (estadoJogo === 1) {
-         // Faz skip ao tempo de memorização
-         temporizador = -999999; 
-      } 
-      else if (estadoJogo === 2 && !esperandoProximaPose) {
-         // Faz skip à pose atual e dá-te 50 pontinhos de borla
-         sequenciaAtual[poseAtualAlvo].status = 1; 
-         if (somConcluido.isLoaded()) somConcluido.play();
-         pontuacao += 50; 
-         
-         poseAtualAlvo++; 
-         tempoNaPose = 0;
-         tempoInicioPose = millis(); 
-         
-         if (poseAtualAlvo >= sequenciaAtual.length) {
-            esperandoProximaPose = true;
-            tempoEspera = millis();
-            if (nivelAtual >= 5) {
-               textoFeedback = "TERMINASTE!";
-            } else {
-               textoFeedback = "MUITO BOM! PREPARA-TE...";
-            }
-         } else {
-            textoFeedback = "DEBUG: SKIP!";
-         }
-      }
-      return; 
-    }
-    // ==========================================
-
     if (!esperandoProximaPose) { 
       let btnCx = 1235; let btnCy = 45; let btnRaio = 26;
       
@@ -485,4 +443,12 @@ function verificarPose(pose, idPose) {
   }
   
   return false;
+}
+
+// === TECLAS DE ATALHO (DEBUG) ===
+function keyPressed() {
+  // Pressionar a tecla M ou m para alternar o esqueleto visual
+  if (key === 'M' || key === 'm') {
+    mostrarEsqueleto = !mostrarEsqueleto;
+  }
 }
