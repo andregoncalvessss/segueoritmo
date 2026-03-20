@@ -23,14 +23,25 @@ function menuPrincipal() {
   text("JOGAR", 640, 330);
   text("INSTRUÇÕES", 640, 450);
   textAlign(CENTER, CENTER);
+  
+  // === GARANTIR QUE A CAIXA DE TEXTO NÃO APARECE NO MENU ===
+  if (typeof inputNome !== 'undefined') inputNome.hide();
 }
 
 function cliqueMenu() {
   if (mouseX > 490 && mouseX < 790) {
     if (mouseY > 300 && mouseY < 360) {
       if (somClick.isLoaded()) somClick.play();
-      ecra = 4; 
+      
+      // === RESETAR TUDO E IR PARA O ECRÃ DO NOME (6) ===
+      inputNome.value(''); // Limpa o nome antigo
+      ecra = 6;
       resizeCanvas(1280, 720); 
+      
+      // Resetar flags de reiniciar
+      faseBotoesReiniciar = false;
+      timerPulsoEsq = 0;
+      timerPulsoDir = 0;
       
     } else if (mouseY > 420 && mouseY < 480) {
       if (somClick.isLoaded()) somClick.play();

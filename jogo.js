@@ -1,6 +1,7 @@
 // --- jogo.js ---
 
-var isMuted = false;
+// Variável global para o mute
+let isMuted = false;
 
 function getEscalaX() { return 1280 / (video.elt.videoWidth || 640); }
 function getEscalaY() { return 720 / (video.elt.videoHeight || 480); }
@@ -59,62 +60,49 @@ function jogo(isPausado = false) {
   }
   textAlign(CENTER, CENTER);
 
+  // === BOTÕES DE PAUSA E MUTE ===
   if (estadoJogo > 0) {
     let btnCx = 1235; 
     let btnCy = 45;   
     let btnRaio = 26; 
-    fill(0); 
-    noStroke();
+    
+    fill(0); noStroke();
     ellipse(btnCx, btnCy, btnRaio * 2, btnRaio * 2);
     fill(255);
-    let barW = 6;
-    let barH = 22;
-    let espacamento = 4; 
+    let barW = 6; let barH = 22; let espacamento = 4; 
     rect(btnCx - espacamento - barW, btnCy - barH/2, barW, barH, 10);
     rect(btnCx + espacamento, btnCy - barH/2, barW, barH, 10);
 
-    // Botão MUTE 
     let muteY = btnCy + btnRaio + 35;
-    let muteRadius = 28;
-    fill(0);
-    stroke(255);
-    strokeWeight(3);
-    ellipse(btnCx, muteY, muteRadius * 2);
-
-    // Ícone de alto-falante melhorado
-    let iconX = btnCx;
+    let muteRadius = 26; 
+    let iconX = btnCx - 2; 
     let iconY = muteY;
-    noFill();
-    stroke(255);
-    strokeWeight(3);
-    // Corpo do alto-falante
+
+    fill(0); noStroke();
+    ellipse(btnCx, muteY, muteRadius * 2, muteRadius * 2);
+
+    fill(255); noStroke();
     beginShape();
-    vertex(iconX - 10, iconY);
-    vertex(iconX - 4, iconY - 7);
-    vertex(iconX - 4, iconY + 7);
-    vertex(iconX - 10, iconY);
-    endShape();
-    // Onda de som (unmute)
-    if (!isMuted) {
-      stroke(255);
-      arc(iconX + 2, iconY, 12, 12, -PI/4, PI/4);
-      arc(iconX + 7, iconY, 18, 18, -PI/4, PI/4);
-    }
-    // Linha de mute
+    vertex(iconX - 10, iconY - 5);
+    vertex(iconX - 2, iconY - 5);
+    vertex(iconX + 6, iconY - 12);
+    vertex(iconX + 6, iconY + 12);
+    vertex(iconX - 2, iconY + 5);
+    vertex(iconX - 10, iconY + 5);
+    endShape(CLOSE);
+
+    noFill(); stroke(255); strokeWeight(3); strokeCap(ROUND);
+    arc(iconX + 6, iconY, 14, 14, -PI/3, PI/3);
+    arc(iconX + 6, iconY, 26, 26, -PI/3, PI/3);
+
     if (isMuted) {
-      stroke(255, 50, 50);
-      strokeWeight(4);
-      line(iconX - 8, iconY - 8, iconX + 12, iconY + 8);
-      noStroke();
-      fill(255, 50, 50);
-      textSize(18);
-      textAlign(CENTER, CENTER);
-      text("MUTE", iconX, iconY + muteRadius + 18);
+      stroke(0); strokeWeight(7); strokeCap(ROUND);
+      line(iconX - 12, iconY - 12, iconX + 16, iconY + 12);
+      stroke(255); strokeWeight(3);
+      line(iconX - 12, iconY - 12, iconX + 16, iconY + 12);
     }
-    noStroke();
+    noStroke(); 
   }
-// Variável global para mute
-var isMuted = false;
 
   push();
     translate(1280, 0); scale(-1, 1);
@@ -233,6 +221,10 @@ var isMuted = false;
                ecra = 3; estadoJogo = 0; resizeCanvas(1280, 720);
                somFundo.stop();
                if (somPontuacao.isLoaded()) somPontuacao.play();
+               
+               guardarPontuacaoFinal(); 
+               tempoInicioResultados = millis(); 
+               faseBotoesReiniciar = false; 
             } else {
                gerarSequencia(nivelAtual);
                estadoJogo = 1; 
@@ -338,6 +330,17 @@ var isMuted = false;
        }
     }
   }
+
+  // ==========================================
+  // BOTÃO TEMPORÁRIO DE DEBUG (APAGAR DEPOIS)
+  // ==========================================
+  if (estadoJogo === 1 || estadoJogo === 2) {
+    fill(255, 120, 0); stroke(255); strokeWeight(3);
+    rect(1150, 650, 100, 40, 8);
+    fill(255); noStroke(); textSize(18); textAlign(CENTER, CENTER);
+    text("SKIP", 1200, 670);
+  }
+  // ==========================================
 }
 
 function cliqueJogo() {
@@ -350,19 +353,62 @@ function cliqueJogo() {
       ecra = 3; estadoJogo = 0; resizeCanvas(1280, 720);
       somFundo.stop();
       if (somPontuacao.isLoaded()) somPontuacao.play();
+      
+      guardarPontuacaoFinal(); 
+      tempoInicioResultados = millis(); 
+      faseBotoesReiniciar = false; 
     }
   } 
   if (estadoJogo === 1 || estadoJogo === 2) {
+    
+    // ==========================================
+    // CLIQUE NO BOTÃO DEBUG (APAGAR DEPOIS)
+    // ==========================================
+    if (mouseX > 1150 && mouseX < 1250 && mouseY > 650 && mouseY < 690) {
+      if (somClick.isLoaded()) somClick.play();
+      
+      if (estadoJogo === 1) {
+         // Faz skip ao tempo de memorização
+         temporizador = -999999; 
+      } 
+      else if (estadoJogo === 2 && !esperandoProximaPose) {
+         // Faz skip à pose atual e dá-te 50 pontinhos de borla
+         sequenciaAtual[poseAtualAlvo].status = 1; 
+         if (somConcluido.isLoaded()) somConcluido.play();
+         pontuacao += 50; 
+         
+         poseAtualAlvo++; 
+         tempoNaPose = 0;
+         tempoInicioPose = millis(); 
+         
+         if (poseAtualAlvo >= sequenciaAtual.length) {
+            esperandoProximaPose = true;
+            tempoEspera = millis();
+            if (nivelAtual >= 5) {
+               textoFeedback = "TERMINASTE!";
+            } else {
+               textoFeedback = "MUITO BOM! PREPARA-TE...";
+            }
+         } else {
+            textoFeedback = "DEBUG: SKIP!";
+         }
+      }
+      return; 
+    }
+    // ==========================================
+
     if (!esperandoProximaPose) { 
       let btnCx = 1235; let btnCy = 45; let btnRaio = 26;
+      
       if (dist(mouseX, mouseY, btnCx, btnCy) < btnRaio) {
         if (somClick.isLoaded()) somClick.play();
         ecra = 5; tempoPausaInicio = millis(); return; 
       }
-      // Clique no botão MUTE
-      let muteY = btnCy + btnRaio + 28;
-      let muteRadius = 28;
+      
+      let muteY = btnCy + btnRaio + 35;
+      let muteRadius = 26;
       if (dist(mouseX, mouseY, btnCx, muteY) < muteRadius) {
+        if (somClick.isLoaded()) somClick.play();
         isMuted = !isMuted;
         if (isMuted) {
           somFundo.setVolume(0);
@@ -375,7 +421,6 @@ function cliqueJogo() {
   }
 }
 
-// === NOVA LÓGICA ESTRITA E EXCLUSIVA ===
 function verificarPose(pose, idPose) {
   let pulsoEsq = pose.left_wrist;    let pulsoDir = pose.right_wrist;     
   let ombroEsq = pose.left_shoulder; let ombroDir = pose.right_shoulder;  
@@ -391,7 +436,6 @@ function verificarPose(pose, idPose) {
 
   let margem = tamanhoTronco * 0.35; 
   
-  // Condições dos Braços
   let esqNoAr = pulsoEsq.y < (ombroEsq.y - margem);  
   let esqBaixo = pulsoEsq.y > (ombroEsq.y + margem); 
   let esqMeio = !esqNoAr && !esqBaixo;       
@@ -400,7 +444,6 @@ function verificarPose(pose, idPose) {
   let dirBaixo = pulsoDir.y > (ombroDir.y + margem);
   let dirMeio = !dirNoAr && !dirBaixo;
 
-  // Condições das Pernas (com fallback caso não sejam detetadas)
   let pernaEsqNoAr = false;
   let pernaDirNoAr = false;
   let pernasAfastadas = false;
@@ -410,52 +453,33 @@ function verificarPose(pose, idPose) {
       pernaDirNoAr = joelhoDir.y < (joelhoEsq.y - tamanhoTronco * 0.15);
       
       if (ancaEsq && ancaDir && ancaEsq.confidence > 0.1 && ancaDir.confidence > 0.1) {
-          // Pernas mais largas que as ancas = afastadas
           pernasAfastadas = abs(joelhoEsq.x - joelhoDir.x) > abs(ancaEsq.x - ancaDir.x) * 1.3;
       }
   }
 
-  // Se nenhuma perna estiver no ar, assumimos pés no chão
   let pernasNoChao = !pernaEsqNoAr && !pernaDirNoAr;
   
-  // === APLICAÇÃO DAS REGRAS EXCLUSIVAS ===
-  
-  // 1. As duas mãos no ar (Braços UP, Pernas DOWN e JUNTAS)
   if (idPose === '2maosnoar') {
       return esqNoAr && dirNoAr && pernasNoChao && !pernasAfastadas;
   }
-  
-  // 2. Mão Direita ao lado (Direito MIDDLE, Esquerdo DOWN, Pernas DOWN)
   if (idPose === 'maoDireita') {
       return dirMeio && esqBaixo && pernasNoChao; 
   }
-  
-  // 3. Mão Esquerda ao lado (Esquerdo MIDDLE, Direito DOWN, Pernas DOWN)
   if (idPose === 'maoEsquerda') {
       return esqMeio && dirBaixo && pernasNoChao;
   }
-  
-  // 4. Posição T (Ambos MIDDLE, Pernas DOWN)
   if (idPose === 'posicaoT') {
       return esqMeio && dirMeio && pernasNoChao;
   }
-  
-  // 5. Perna Esquerda (Perna Esquerda UP, Ambos braços MIDDLE)
   if (idPose === 'pernaEsquerda') {
       return esqMeio && dirMeio && pernaEsqNoAr;
   }
-  
-  // 6. Mão Direita Levantada (Direito UP, Esquerdo DOWN, Pernas DOWN)
   if (idPose === 'MaoDireitaLevantada') {
       return dirNoAr && esqBaixo && pernasNoChao;
   }
-  
-  // 7. Mão Esquerda Levantada (Esquerdo UP, Direito DOWN, Pernas DOWN)
   if (idPose === 'MaoEsquerdaLevantada') {
       return esqNoAr && dirBaixo && pernasNoChao;
   }
-  
-  // 8. Estrela (Ambos braços UP, Pernas AFASTADAS)
   if (idPose === 'Estrela') {
       return esqNoAr && dirNoAr && pernasAfastadas;
   }
