@@ -1,5 +1,7 @@
 // --- jogo.js ---
 
+var isMuted = false;
+
 function getEscalaX() { return 1280 / (video.elt.videoWidth || 640); }
 function getEscalaY() { return 720 / (video.elt.videoHeight || 480); }
 
@@ -70,7 +72,49 @@ function jogo(isPausado = false) {
     let espacamento = 4; 
     rect(btnCx - espacamento - barW, btnCy - barH/2, barW, barH, 10);
     rect(btnCx + espacamento, btnCy - barH/2, barW, barH, 10);
+
+    // Botão MUTE 
+    let muteY = btnCy + btnRaio + 35;
+    let muteRadius = 28;
+    fill(0);
+    stroke(255);
+    strokeWeight(3);
+    ellipse(btnCx, muteY, muteRadius * 2);
+
+    // Ícone de alto-falante melhorado
+    let iconX = btnCx;
+    let iconY = muteY;
+    noFill();
+    stroke(255);
+    strokeWeight(3);
+    // Corpo do alto-falante
+    beginShape();
+    vertex(iconX - 10, iconY);
+    vertex(iconX - 4, iconY - 7);
+    vertex(iconX - 4, iconY + 7);
+    vertex(iconX - 10, iconY);
+    endShape();
+    // Onda de som (unmute)
+    if (!isMuted) {
+      stroke(255);
+      arc(iconX + 2, iconY, 12, 12, -PI/4, PI/4);
+      arc(iconX + 7, iconY, 18, 18, -PI/4, PI/4);
+    }
+    // Linha de mute
+    if (isMuted) {
+      stroke(255, 50, 50);
+      strokeWeight(4);
+      line(iconX - 8, iconY - 8, iconX + 12, iconY + 8);
+      noStroke();
+      fill(255, 50, 50);
+      textSize(18);
+      textAlign(CENTER, CENTER);
+      text("MUTE", iconX, iconY + muteRadius + 18);
+    }
+    noStroke();
   }
+// Variável global para mute
+var isMuted = false;
 
   push();
     translate(1280, 0); scale(-1, 1);
@@ -314,6 +358,18 @@ function cliqueJogo() {
       if (dist(mouseX, mouseY, btnCx, btnCy) < btnRaio) {
         if (somClick.isLoaded()) somClick.play();
         ecra = 5; tempoPausaInicio = millis(); return; 
+      }
+      // Clique no botão MUTE
+      let muteY = btnCy + btnRaio + 28;
+      let muteRadius = 28;
+      if (dist(mouseX, mouseY, btnCx, muteY) < muteRadius) {
+        isMuted = !isMuted;
+        if (isMuted) {
+          somFundo.setVolume(0);
+        } else {
+          somFundo.setVolume(typeof volumeMusica !== 'undefined' ? volumeMusica : 1);
+        }
+        return;
       }
     }
   }
