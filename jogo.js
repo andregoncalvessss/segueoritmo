@@ -186,7 +186,6 @@ function jogo(isPausado = false) {
             esperandoProximaPose = false;
             nivelAtual++;
             if (nivelAtual > 5) {
-               // === FIM DE JOGO (Completou os 5 Níveis) ===
                ecra = 3; estadoJogo = 0; resizeCanvas(1280, 720);
                somFundo.stop();
                if (somPontuacao.isLoaded()) somPontuacao.play();
@@ -216,7 +215,6 @@ function jogo(isPausado = false) {
                  sequenciaAtual[poseAtualAlvo].status = -1; 
                  textoFeedback = "TEMPO ESGOTADO!";
                  
-                 // === TOCA SOM DE ERRO ===
                  if (somErro.isLoaded()) somErro.play();
 
                  poseAtualAlvo++; 
@@ -245,7 +243,6 @@ function jogo(isPausado = false) {
                 if (tempoNaPose > 20) { 
                    sequenciaAtual[poseAtualAlvo].status = 1; 
 
-                   // === TOCA SOM DE CONCLUÍDO ===
                    if (somConcluido.isLoaded()) somConcluido.play();
 
                    let tempoGasto = tempoDecorrido / 1000;
@@ -305,7 +302,6 @@ function cliqueJogo() {
       if (somClick.isLoaded()) somClick.play();
       nivelAtual = 1; pontuacao = 0; gerarSequencia(nivelAtual); estadoJogo = 1; resizeCanvas(1280, 864);
     } else {
-      // === FIM DE JOGO MANUAL ===
       if (somClick.isLoaded()) somClick.play();
       ecra = 3; estadoJogo = 0; resizeCanvas(1280, 720);
       somFundo.stop();
@@ -323,6 +319,7 @@ function cliqueJogo() {
   }
 }
 
+// === NOVA LÓGICA ESTRITA E EXCLUSIVA ===
 function verificarPose(pose, idPose) {
   let pulsoEsq = pose.left_wrist;    let pulsoDir = pose.right_wrist;     
   let ombroEsq = pose.left_shoulder; let ombroDir = pose.right_shoulder;  
@@ -337,30 +334,75 @@ function verificarPose(pose, idPose) {
   else tamanhoTronco = abs(ombroEsq.x - ombroDir.x) * 1.5; 
 
   let margem = tamanhoTronco * 0.35; 
+  
+  // Condições dos Braços
   let esqNoAr = pulsoEsq.y < (ombroEsq.y - margem);  
   let esqBaixo = pulsoEsq.y > (ombroEsq.y + margem); 
   let esqMeio = !esqNoAr && !esqBaixo;       
+  
   let dirNoAr = pulsoDir.y < (ombroDir.y - margem);
   let dirBaixo = pulsoDir.y > (ombroDir.y + margem);
   let dirMeio = !dirNoAr && !dirBaixo;
+
+  // Condições das Pernas (com fallback caso não sejam detetadas)
+  let pernaEsqNoAr = false;
+  let pernaDirNoAr = false;
+  let pernasAfastadas = false;
+
+  if (joelhoEsq && joelhoDir && joelhoEsq.confidence > 0.1 && joelhoDir.confidence > 0.1) {
+      pernaEsqNoAr = joelhoEsq.y < (joelhoDir.y - tamanhoTronco * 0.15); 
+      pernaDirNoAr = joelhoDir.y < (joelhoEsq.y - tamanhoTronco * 0.15);
+      
+      if (ancaEsq && ancaDir && ancaEsq.confidence > 0.1 && ancaDir.confidence > 0.1) {
+          // Pernas mais largas que as ancas = afastadas
+          pernasAfastadas = abs(joelhoEsq.x - joelhoDir.x) > abs(ancaEsq.x - ancaDir.x) * 1.3;
+      }
+  }
+
+  // Se nenhuma perna estiver no ar, assumimos pés no chão
+  let pernasNoChao = !pernaEsqNoAr && !pernaDirNoAr;
   
-  if (idPose === '2maosnoar') return esqNoAr && dirNoAr;
-  if (idPose === 'maoDireita') return dirMeio && esqBaixo; 
-  if (idPose === 'maoEsquerda') return esqMeio && dirBaixo;
-  if (idPose === 'posicaoT') return esqMeio && dirMeio;
+  // === APLICAÇÃO DAS REGRAS EXCLUSIVAS ===
   
+  // 1. As duas mãos no ar (Braços UP, Pernas DOWN e JUNTAS)
+  if (idPose === '2maosnoar') {
+      return esqNoAr && dirNoAr && pernasNoChao && !pernasAfastadas;
+  }
+  
+  // 2. Mão Direita ao lado (Direito MIDDLE, Esquerdo DOWN, Pernas DOWN)
+  if (idPose === 'maoDireita') {
+      return dirMeio && esqBaixo && pernasNoChao; 
+  }
+  
+  // 3. Mão Esquerda ao lado (Esquerdo MIDDLE, Direito DOWN, Pernas DOWN)
+  if (idPose === 'maoEsquerda') {
+      return esqMeio && dirBaixo && pernasNoChao;
+  }
+  
+  // 4. Posição T (Ambos MIDDLE, Pernas DOWN)
+  if (idPose === 'posicaoT') {
+      return esqMeio && dirMeio && pernasNoChao;
+  }
+  
+  // 5. Perna Esquerda (Perna Esquerda UP, Ambos braços MIDDLE)
   if (idPose === 'pernaEsquerda') {
-     if (!esqMeio || !dirMeio) return false;
-     if (!joelhoEsq || !joelhoDir || joelhoEsq.confidence < 0.1 || joelhoDir.confidence < 0.1) return false;
-     return joelhoEsq.y < (joelhoDir.y - tamanhoTronco * 0.10); 
+      return esqMeio && dirMeio && pernaEsqNoAr;
   }
-  if (idPose === 'MaoDireitaLevantada') return pulsoDir.y < (ombroDir.y - margem);
-  if (idPose === 'MaoEsquerdaLevantada') return pulsoEsq.y < (ombroEsq.y - margem);
+  
+  // 6. Mão Direita Levantada (Direito UP, Esquerdo DOWN, Pernas DOWN)
+  if (idPose === 'MaoDireitaLevantada') {
+      return dirNoAr && esqBaixo && pernasNoChao;
+  }
+  
+  // 7. Mão Esquerda Levantada (Esquerdo UP, Direito DOWN, Pernas DOWN)
+  if (idPose === 'MaoEsquerdaLevantada') {
+      return esqNoAr && dirBaixo && pernasNoChao;
+  }
+  
+  // 8. Estrela (Ambos braços UP, Pernas AFASTADAS)
   if (idPose === 'Estrela') {
-    let bracosLevantados = pulsoEsq.y < (ombroEsq.y - margem) && pulsoDir.y < (ombroDir.y - margem);
-    let pernasAfastadas = ancaEsq && ancaDir && joelhoEsq && joelhoDir &&
-      (abs(joelhoEsq.x - joelhoDir.x) > abs(ancaEsq.x - ancaDir.x) * 1.2);
-    return bracosLevantados && pernasAfastadas;
+      return esqNoAr && dirNoAr && pernasAfastadas;
   }
+  
   return false;
 }
