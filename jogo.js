@@ -1,8 +1,5 @@
-// --- jogo.js ---
-
-// Variáveis globais para opções
 let isMuted = false;
-let mostrarEsqueleto = false; // Começa escondido por defeito
+let mostrarEsqueleto = false;
 
 function getEscalaX() { return 1280 / (video.elt.videoWidth || 640); }
 function getEscalaY() { return 720 / (video.elt.videoHeight || 480); }
@@ -445,9 +442,8 @@ function verificarPose(pose, idPose) {
   return false;
 }
 
-// === TECLAS DE ATALHO (DEBUG) ===
+
 function keyPressed() {
-  // Pressionar a tecla M ou m para alternar o esqueleto visual
   if (key === 'M' || key === 'm') {
     mostrarEsqueleto = !mostrarEsqueleto;
   }

@@ -1,4 +1,3 @@
-// --- menu.js ---
 
 function menuPrincipal() {
   background(imgFundo);

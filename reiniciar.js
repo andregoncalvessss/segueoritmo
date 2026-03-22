@@ -1,5 +1,3 @@
-// --- reiniciar.js ---
-
 function ecraReiniciar() {
   let agora = millis();
 

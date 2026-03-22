@@ -1,5 +1,3 @@
-// --- dificuldade.js ---
-
 function ecraDificuldade() {
   background(30, 30, 50); 
   
@@ -52,7 +50,7 @@ function iniciarJogo() {
   ecra = 1;       
   resizeCanvas(1280, 864);
 
-  // Inicia a música de fundo em Loop
+ 
   if (!somFundo.isPlaying() && somFundo.isLoaded()) {
     somFundo.loop();
   }

@@ -1,5 +1,3 @@
-// --- main.js ---
-
 let ecra = 0; 
 let imgFundo;
 let fonteArcade; 
@@ -62,7 +60,7 @@ function preload() {
   
   bodyPose = ml5.bodyPose("MoveNet"); 
 
-  // CARREGAR SONS (Sem acentos para não dar Erro 404!)
+  // CARREGAR SONS 
   somConcluido = loadSound('sounds/concluido.mp3');
   somErro = loadSound('sounds/erro.mp3');
   somFundo = loadSound('sounds/somdefundo.mp3');
@@ -75,7 +73,7 @@ function setup() {
   textAlign(CENTER, CENTER);
   textFont(fonteArcade);
   
-  // === CRIAR A CAIXA DE TEXTO (Escondida por defeito) ===
+  // === CRIAR A CAIXA DE TEXTO ===
   inputNome = createInput('');
   inputNome.size(300, 40);
   inputNome.style('font-size', '24px');
