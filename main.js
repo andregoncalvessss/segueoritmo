@@ -5,7 +5,8 @@ let video;
 
 let imgPoses = [];         
 let sequenciaAtual = [];   
-let imgSeta;               
+let imgSeta; 
+let imgCadeira; // <-- NOVA VARIÁVEL DA CADEIRA DE RODAS AQUI             
 let estadoJogo = 0;        
 let temporizador = 0;      
 
@@ -44,10 +45,14 @@ let timerPulsoEsq = 0;
 let timerPulsoDir = 0;
 const tempoParaClicar = 2000; // 2 segundos (2000 milissegundos)
 
+// === NOVA VARIÁVEL PARA O MENU DE SELEÇÃO ===
+let menuSelecao;
+
 function preload() {
   imgFundo = loadImage('assets/background.png');
   fonteArcade = loadFont('assets/ARCADE_N.TTF'); 
   imgSeta = loadImage('assets/seta.png'); 
+  imgCadeira = loadImage('assets/cadeiraderodas.png'); // <-- CARREGAMENTO DA IMAGEM AQUI
   
   imgPoses[0] = { img: loadImage('assets/2maosnoar.png'), id: '2maosnoar' };
   imgPoses[1] = { img: loadImage('assets/maoDireita.png'), id: 'maoDireita' };
@@ -92,12 +97,10 @@ function setup() {
       let idx = tabelaLimpa.findIndex(e => e.nome.toUpperCase() === entry.nome.toUpperCase());
       
       if (idx !== -1) {
-        // Se já existe e a pontuação for maior, substitui
         if (entry.pontos > tabelaLimpa[idx].pontos) {
           tabelaLimpa[idx].pontos = entry.pontos;
         }
       } else {
-        // Se não existe, adiciona
         tabelaLimpa.push(entry);
       }
     }
@@ -113,6 +116,9 @@ function setup() {
     });
   });
   video.hide();         
+
+  // === INICIALIZAR A CLASSE DE SELEÇÃO ===
+  menuSelecao = new SelecionarExercicios();
 }
 
 function draw() {
@@ -123,12 +129,12 @@ function draw() {
   else if (ecra === 4) ecraDificuldade(); 
   else if (ecra === 5) ecraPausa();       
   else if (ecra === 6) ecraNome(); 
+  else if (ecra === 7) menuSelecao.desenhar(); // ECRÃ DE SELEÇÃO
 }
 
 function mousePressed() {
   userStartAudio();
 
-  // DESATIVAMOS CLIQUE DO RATO NOS RESULTADOS SE ESTIVER NA FASE DAS MÃOS
   if (ecra === 3 && faseBotoesReiniciar) return;
 
   if (ecra === 0) cliqueMenu();
@@ -138,9 +144,9 @@ function mousePressed() {
   else if (ecra === 4) cliqueDificuldade(); 
   else if (ecra === 5) cliquePausa();       
   else if (ecra === 6) cliqueNome();
+  else if (ecra === 7) menuSelecao.clique(); // CLIQUE NO ECRÃ DE SELEÇÃO
 }
 
-// === FUNÇÃO PARA GUARDAR OS PONTOS NA MEMÓRIA ===
 function guardarPontuacaoFinal() {
   let indexJogador = -1;
   let meuRecordeAntigo = 0;

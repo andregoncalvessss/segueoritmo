@@ -1,8 +1,68 @@
 let isMuted = false;
 let mostrarEsqueleto = false;
 
+
+let rastreioAlvoX = null;
+let rastreioAlvoY = null;
+
 function getEscalaX() { return 1280 / (video.elt.videoWidth || 640); }
 function getEscalaY() { return 720 / (video.elt.videoHeight || 480); }
+
+
+function obterPosePrincipal(posesArray) {
+  if (!posesArray || posesArray.length === 0) return null;
+
+  let videoW = video.elt.videoWidth || 640;
+  let videoH = video.elt.videoHeight || 480;
+
+  if (rastreioAlvoX === null) {
+    
+    let poseCentral = posesArray[0];
+    let menorDist = Infinity;
+    for (let p of posesArray) {
+      if (p.nose) {
+        let d = dist(p.nose.x, p.nose.y, videoW / 2, videoH / 2);
+        if (d < menorDist) {
+          menorDist = d;
+          poseCentral = p;
+        }
+      }
+    }
+    if (poseCentral.nose) {
+       rastreioAlvoX = poseCentral.nose.x;
+       rastreioAlvoY = poseCentral.nose.y;
+    }
+    return poseCentral;
+  }
+
+  
+  let melhorPose = posesArray[0];
+  let menorDistRastreio = Infinity;
+
+  for (let p of posesArray) {
+    if (p.nose) {
+      let d = dist(p.nose.x, p.nose.y, rastreioAlvoX, rastreioAlvoY);
+      if (d < menorDistRastreio) {
+        menorDistRastreio = d;
+        melhorPose = p;
+      }
+    }
+  }
+
+  
+  if (menorDistRastreio > 200) {
+    rastreioAlvoX = null; 
+    return melhorPose;
+  }
+
+  // 4. Suaviza a posição para o jogo não tremer
+  if (melhorPose.nose) {
+    rastreioAlvoX = lerp(rastreioAlvoX, melhorPose.nose.x, 0.4);
+    rastreioAlvoY = lerp(rastreioAlvoY, melhorPose.nose.y, 0.4);
+  }
+  
+  return melhorPose;
+}
 
 function desenharOsso(p1, p2) {
   if (p1 && p2 && p1.confidence > 0.1 && p2.confidence > 0.1) {
@@ -21,14 +81,20 @@ function gerarSequencia(nivel) {
   sequenciaAtual = [];
   let numExercicios = nivel + 1; 
   let ultimaPose = null;
+  
+  let posesDisponiveis = menuSelecao.obterPosesAtivas();
+
   for (let i = 0; i < numExercicios; i++) {
-    let novaPose = random(imgPoses);
-    while (ultimaPose && novaPose.id === ultimaPose.id) {
-      novaPose = random(imgPoses);
+    let novaPose = random(posesDisponiveis);
+    
+    while (ultimaPose && novaPose.id === ultimaPose.id && posesDisponiveis.length > 1) {
+      novaPose = random(posesDisponiveis);
     }
+    
     sequenciaAtual.push({ img: novaPose.img, id: novaPose.id, status: 0 });
     ultimaPose = novaPose;
   }
+  
   poseAtualAlvo = 0; 
   tempoNaPose = 0; 
   esperandoProximaPose = false;
@@ -186,24 +252,24 @@ function jogo(isPausado = false) {
        textSize(25); text(textoFeedback, 640, 125);
     }
 
-    if (poses.length > 0) {
-      let pose = poses[0]; 
-      
-      // === APENAS DESENHA O ESQUELETO SE O MODO DEBUG (TECLA M) ESTIVER ATIVO ===
+  
+    let posePrincipal = obterPosePrincipal(poses);
+
+    if (posePrincipal) {
       if (mostrarEsqueleto) {
-          desenharOsso(pose.left_shoulder, pose.left_elbow);
-          desenharOsso(pose.left_elbow, pose.left_wrist);
-          desenharOsso(pose.right_shoulder, pose.right_elbow);
-          desenharOsso(pose.right_elbow, pose.right_wrist);
-          desenharOsso(pose.left_shoulder, pose.left_hip);
-          desenharOsso(pose.right_shoulder, pose.right_hip);
-          desenharOsso(pose.left_hip, pose.right_hip);
-          desenharOsso(pose.left_hip, pose.left_knee);
-          desenharOsso(pose.right_hip, pose.right_knee);
+          desenharOsso(posePrincipal.left_shoulder, posePrincipal.left_elbow);
+          desenharOsso(posePrincipal.left_elbow, posePrincipal.left_wrist);
+          desenharOsso(posePrincipal.right_shoulder, posePrincipal.right_elbow);
+          desenharOsso(posePrincipal.right_elbow, posePrincipal.right_wrist);
+          desenharOsso(posePrincipal.left_shoulder, posePrincipal.left_hip);
+          desenharOsso(posePrincipal.right_shoulder, posePrincipal.right_hip);
+          desenharOsso(posePrincipal.left_hip, posePrincipal.right_hip);
+          desenharOsso(posePrincipal.left_hip, posePrincipal.left_knee);
+          desenharOsso(posePrincipal.right_hip, posePrincipal.right_knee);
           
           let eX = getEscalaX(); let eY = getEscalaY();
-          for (let i = 0; i < pose.keypoints.length; i++) {
-             let ponto = pose.keypoints[i];
+          for (let i = 0; i < posePrincipal.keypoints.length; i++) {
+             let ponto = posePrincipal.keypoints[i];
              if (ponto.confidence > 0.1) { 
                 fill(255, 255, 0); noStroke();
                 ellipse(1280 - (ponto.x * eX), (ponto.y * eY) + 144, 15);
@@ -234,7 +300,7 @@ function jogo(isPausado = false) {
             }
          }
       } else {
-         if (poses.length === 0) tempoInicioPose += deltaTime; 
+         if (!posePrincipal) tempoInicioPose += deltaTime; 
 
          let tempoDecorrido = millis() - tempoInicioPose;
          let tempoRestante = tempoLimitePose - tempoDecorrido;
@@ -272,9 +338,9 @@ function jogo(isPausado = false) {
              }
          }
 
-         if (poses.length > 0 && (isFacil || tempoRestante > 0)) {
+         if (posePrincipal && (isFacil || tempoRestante > 0)) {
              let idAlvo = sequenciaAtual[poseAtualAlvo].id;
-             if (verificarPose(poses[0], idAlvo)) {
+             if (verificarPose(posePrincipal, idAlvo)) {
                 tempoNaPose++; 
                 fill(0, 255, 0); noStroke(); 
                 rect(0, 134, (tempoNaPose / 20) * 1280, 10);
@@ -308,7 +374,7 @@ function jogo(isPausado = false) {
              } else {
                 tempoNaPose = 0; 
              }
-         } else if (poses.length === 0) {
+         } else if (!posePrincipal) {
              tempoNaPose = 0;
          }
       }
@@ -441,7 +507,6 @@ function verificarPose(pose, idPose) {
   
   return false;
 }
-
 
 function keyPressed() {
   if (key === 'M' || key === 'm') {

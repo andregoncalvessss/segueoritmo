@@ -1,57 +1,41 @@
+let tempoPorExercicio = 4000;
+
 function ecraDificuldade() {
-  background(30, 30, 50); 
-  
-  fill(255); 
-  textAlign(CENTER, CENTER); 
-  textSize(40);
-  text("SELECIONA A DIFICULDADE", 640, 150);
+  background(30, 30, 50);
 
-  fill(0, 180, 0); stroke(255); strokeWeight(4);
-  rect(440, 250, 400, 80, 15);
-  fill(255); noStroke(); textSize(30);
-  text("FÁCIL", 640, 290);
+  fill(255); noStroke(); textSize(40); textAlign(CENTER, CENTER);
+  text("ESCOLHE A DIFICULDADE", 640, 150);
 
-  fill(200, 150, 0); stroke(255); strokeWeight(4);
-  rect(440, 380, 400, 80, 15);
-  fill(255); noStroke(); textSize(30);
-  text("MÉDIA", 640, 420);
+  stroke(0); strokeWeight(4);
 
-  fill(180, 0, 0); stroke(255); strokeWeight(4);
-  rect(440, 510, 400, 80, 15);
-  fill(255); noStroke(); textSize(30);
-  text("DIFÍCIL", 640, 550);
+  // Botões
+  fill(0, 200, 0); rect(490, 250, 300, 60, 10);   // Fácil
+  fill(200, 200, 0); rect(490, 350, 300, 60, 10); // Médio
+  fill(200, 0, 0); rect(490, 450, 300, 60, 10);   // Difícil
+
+  noStroke(); fill(255); textSize(25);
+  text("FÁCIL", 640, 280);
+  text("MÉDIO", 640, 380);
+  text("DIFÍCIL", 640, 480);
 }
 
 function cliqueDificuldade() {
-  if (mouseX > 440 && mouseX < 840) {
-    if (mouseY > 250 && mouseY < 330) {
-      if (somClick.isLoaded()) somClick.play();
-      tempoPorExercicio = 4000; 
-      iniciarJogo();
-    } 
-    else if (mouseY > 380 && mouseY < 460) {
-      if (somClick.isLoaded()) somClick.play();
-      tempoPorExercicio = 2500; 
-      iniciarJogo();
-    } 
-    else if (mouseY > 510 && mouseY < 590) {
-      if (somClick.isLoaded()) somClick.play();
-      tempoPorExercicio = 1500; 
-      iniciarJogo();
-    }
+  // Clique no botão FÁCIL
+  if (mouseX > 490 && mouseX < 790 && mouseY > 250 && mouseY < 310) {
+    if (somClick.isLoaded()) somClick.play();
+    tempoPorExercicio = 4000;
+    ecra = 7; // Vai para a seleção de exercícios
   }
-}
-
-function iniciarJogo() {
-  nivelAtual = 1;
-  pontuacao = 0;
-  gerarSequencia(nivelAtual);
-  estadoJogo = 1; 
-  ecra = 1;       
-  resizeCanvas(1280, 864);
-
- 
-  if (!somFundo.isPlaying() && somFundo.isLoaded()) {
-    somFundo.loop();
+  // Clique no botão MÉDIO
+  else if (mouseX > 490 && mouseX < 790 && mouseY > 350 && mouseY < 410) {
+    if (somClick.isLoaded()) somClick.play();
+    tempoPorExercicio = 2500;
+    ecra = 7; // Vai para a seleção de exercícios
+  }
+  // Clique no botão DIFÍCIL
+  else if (mouseX > 490 && mouseX < 790 && mouseY > 450 && mouseY < 510) {
+    if (somClick.isLoaded()) somClick.play();
+    tempoPorExercicio = 1500;
+    ecra = 7; // Vai para a seleção de exercícios
   }
 }

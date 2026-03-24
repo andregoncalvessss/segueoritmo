@@ -1,5 +1,3 @@
-// --- nome.js ---
-
 function ecraNome() {
   background(30, 30, 50);
 
