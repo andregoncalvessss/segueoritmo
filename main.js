@@ -6,7 +6,8 @@ let video;
 let imgPoses = [];         
 let sequenciaAtual = [];   
 let imgSeta; 
-let imgCadeira; // <-- NOVA VARIÁVEL DA CADEIRA DE RODAS AQUI             
+let imgCadeira;            
+let imgEcgm; // <-- NOVA VARIÁVEL PARA O LOGOTIPO ECGM             
 let estadoJogo = 0;        
 let temporizador = 0;      
 
@@ -52,7 +53,8 @@ function preload() {
   imgFundo = loadImage('assets/background.png');
   fonteArcade = loadFont('assets/ARCADE_N.TTF'); 
   imgSeta = loadImage('assets/seta.png'); 
-  imgCadeira = loadImage('assets/cadeiraderodas.png'); // <-- CARREGAMENTO DA IMAGEM AQUI
+  imgCadeira = loadImage('assets/cadeiraderodas.png'); 
+  imgEcgm = loadImage('assets/ecgm.colorido.sem.fundo.png'); // <-- CARREGAMENTO DA IMAGEM DO LOGOTIPO AQUI
   
   imgPoses[0] = { img: loadImage('assets/2maosnoar.png'), id: '2maosnoar' };
   imgPoses[1] = { img: loadImage('assets/maoDireita.png'), id: 'maoDireita' };

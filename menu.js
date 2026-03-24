@@ -1,6 +1,20 @@
-
 function menuPrincipal() {
   background(imgFundo);
+
+  // === DESENHAR LOGO ECGM (Canto Superior Esquerdo - MANTENDO PROPORÇÃO) ===
+  // Garante que a imagem está carregada e tem dimensões válidas
+  if (typeof imgEcgm !== 'undefined' && imgEcgm.width > 0) {
+    let alturaAlvo = 60; // <-- Reduzido para ficar mais pequeno (antes estava 100)
+    
+    // Calcula o rácio e a largura proporcional correspondente
+    let ratio = alturaAlvo / imgEcgm.height;
+    let larguraProporcional = imgEcgm.width * ratio;
+    
+    let margem = 30; // Margem do topo e da esquerda
+    
+    // Desenha a imagem na posição X=margem e Y=margem (Canto Superior Esquerdo)
+    image(imgEcgm, margem, margem, larguraProporcional, alturaAlvo); 
+  }
   
   fill(255);         
   stroke(0);         
